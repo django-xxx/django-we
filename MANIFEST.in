@@ -1,0 +1,2 @@
+include README.rst
+include django_we/migrations/*.py
