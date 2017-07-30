@@ -29,7 +29,7 @@ def base_redirect(request):
 
     access_info = get_access_info(JSAPI['appID'], JSAPI['appsecret'], code)
     if 'errcode' in access_info:
-        return redirect(settings.WECHAT_OAUTH2_RETRY_REDIRECT_URI.format(state))
+        return redirect(settings.WECHAT_OAUTH2_RETRY_REDIRECT_URI.format('snsapi_base', state))
 
     return redirect(furl(state).add(access_info).url)
 
@@ -40,15 +40,15 @@ def userinfo_redirect(request):
 
     access_info = get_access_info(JSAPI['appID'], JSAPI['appsecret'], code)
     if 'errcode' in access_info:
-        return redirect(settings.WECHAT_OAUTH2_RETRY_REDIRECT_URI.format(state))
+        return redirect(settings.WECHAT_OAUTH2_RETRY_REDIRECT_URI.format('snsapi_userinfo', state))
 
     userinfo = get_userinfo(access_info.get('access_token', ''), access_info.get('openid', ''))
     if 'openid' not in userinfo:
-        return redirect(settings.WECHAT_OAUTH2_RETRY_REDIRECT_URI.format(state))
+        return redirect(settings.WECHAT_OAUTH2_RETRY_REDIRECT_URI.format('snsapi_userinfo', state))
 
     return redirect(furl(state).add(userinfo).url)
 
 
 @auto_response
 def we_jsapi_signature_api(request):
-    return jsapi_signature_params(JSAPI['appID'], JSAPI['appsecret'], request.GET.get('url', ''))
+    return jsapi_signature_params(JSAPI['appID'], JSAPI['appsecret'], request.GET.get('url', '') or request.POST.get('url', ''))
