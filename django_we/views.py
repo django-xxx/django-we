@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from furl import furl
 from json_response import auto_response
 from pywe_jssdk import jsapi_signature_params
-from pywe_oauth import get_access_info, get_oauth_code_url, get_userinfo
+from pywe_oauth import get_access_info, get_oauth_code_url, get_oauth_redirect_url, get_userinfo
 
 
 JSAPI = settings.WECHAT.get('JSAPI', {})
@@ -29,7 +29,7 @@ def base_redirect(request):
 
     access_info = get_access_info(JSAPI['appID'], JSAPI['appsecret'], code)
     if 'errcode' in access_info:
-        return redirect(settings.WECHAT_OAUTH2_RETRY_REDIRECT_URI.format('snsapi_base', state))
+        return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_base', state))
 
     return redirect(furl(state).add(access_info).url)
 
@@ -40,11 +40,11 @@ def userinfo_redirect(request):
 
     access_info = get_access_info(JSAPI['appID'], JSAPI['appsecret'], code)
     if 'errcode' in access_info:
-        return redirect(settings.WECHAT_OAUTH2_RETRY_REDIRECT_URI.format('snsapi_userinfo', state))
+        return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_userinfo', state))
 
     userinfo = get_userinfo(access_info.get('access_token', ''), access_info.get('openid', ''))
     if 'openid' not in userinfo:
-        return redirect(settings.WECHAT_OAUTH2_RETRY_REDIRECT_URI.format('snsapi_userinfo', state))
+        return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_userinfo', state))
 
     return redirect(furl(state).add(userinfo).url)
 
