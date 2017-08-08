@@ -59,7 +59,7 @@ WECHAT = {
 }
 
 # Based on Urls.py
-WECHAT_BASE_REDIRECT_URI = 'https://we.com/base_redirect'
-WECHAT_USERINFO_REDIRECT_URI = 'https://we.com/userinfo_redirect'
-WECHAT_OAUTH2_RETRY_REDIRECT_URI = 'https://we.com/we_oauth2?scope={}&redirect_url={}'
+WECHAT_BASE_REDIRECT_URI = 'https://we.com/we/base_redirect'
+WECHAT_USERINFO_REDIRECT_URI = 'https://we.com/we/userinfo_redirect'
+WECHAT_OAUTH2_REDIRECT_URI = 'https://we.com/we/we_oauth2?scope={}&redirect_url={}'
 ```
