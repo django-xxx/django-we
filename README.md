@@ -58,6 +58,9 @@ WECHAT = {
     },
 }
 
+# Wechat OAuth Cfg
+DJANGO_WE_OAUTH_CFG = 'JSAPI'  # Default ``JSAPI``
+
 # Based on Urls.py
 WECHAT_BASE_REDIRECT_URI = 'https://we.com/we/base_redirect'
 WECHAT_USERINFO_REDIRECT_URI = 'https://we.com/we/userinfo_redirect'

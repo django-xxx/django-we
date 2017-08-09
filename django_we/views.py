@@ -8,7 +8,7 @@ from pywe_jssdk import jsapi_signature_params
 from pywe_oauth import get_access_info, get_oauth_code_url, get_oauth_redirect_url, get_userinfo
 
 
-JSAPI = settings.WECHAT.get('JSAPI', {})
+JSAPI = settings.WECHAT.get(getattr(settings, 'DJANGO_WE_OAUTH_CFG') if hasattr(settings, 'DJANGO_WE_OAUTH_CFG') else 'JSAPI', {})
 
 
 def we_oauth2(request):
