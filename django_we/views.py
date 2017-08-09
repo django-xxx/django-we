@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf import settings
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from furl import furl
 from json_response import auto_response
 from pywe_jssdk import jsapi_signature_params
@@ -15,6 +15,9 @@ def we_oauth2(request):
     scope = request.GET.get('scope', 'snsapi_userinfo')
     redirect_url = request.GET.get('redirect_url', '')
     default_url = request.GET.get('default_url', '')
+
+    if not (redirect_url or default_url):
+        return render(request, 'django_we/errmsg.html', {'errmsg': 'Redirect or Default URL Should Exists'})
 
     if request.wechat:
         redirect_uri = settings.WECHAT_USERINFO_REDIRECT_URI if scope == 'snsapi_userinfo' else settings.WECHAT_BASE_REDIRECT_URI
