@@ -1,2 +1,3 @@
 include README.rst
 include django_we/migrations/*.py
+include django_we/templates/django_we/*.html
