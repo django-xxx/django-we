@@ -34,7 +34,11 @@ def base_redirect(request):
     if 'errcode' in access_info:
         return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_base', state))
 
-    return redirect(furl(state).add(access_info).url)
+    query_params = {}
+    if hasattr(settings, 'DJANGO_WE_BASE_FUNC') and hasattr(settings.DJANGO_WE_BASE_FUNC, '__call__'):
+        query_params = settings.DJANGO_WE_BASE_FUNC(code, state, access_info)
+
+    return redirect(furl(state).add(access_info).add(query_params).url)
 
 
 def userinfo_redirect(request):
@@ -49,7 +53,11 @@ def userinfo_redirect(request):
     if 'openid' not in userinfo:
         return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_userinfo', state))
 
-    return redirect(furl(state).add(userinfo).url)
+    query_params = {}
+    if hasattr(settings, 'DJANGO_WE_USERINFO_FUNC') and hasattr(settings.DJANGO_WE_USERINFO_FUNC, '__call__'):
+        query_params = settings.DJANGO_WE_USERINFO_FUNC(code, state, access_info, userinfo)
+
+    return redirect(furl(state).add(userinfo).add(query_params).url)
 
 
 @auto_response
