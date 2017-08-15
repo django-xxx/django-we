@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf import settings
+from django.db import transaction
 from django.shortcuts import redirect, render
 from furl import furl
 from json_response import auto_response
@@ -26,6 +27,7 @@ def we_oauth2(request):
     return redirect(default_url or redirect_url)
 
 
+@transaction.atomic
 def base_redirect(request):
     code = request.GET.get('code', '')
     state = request.GET.get('state', '')
@@ -41,6 +43,7 @@ def base_redirect(request):
     return redirect(furl(state).add(access_info).add(query_params).url)
 
 
+@transaction.atomic
 def userinfo_redirect(request):
     code = request.GET.get('code', '')
     state = request.GET.get('state', '')
