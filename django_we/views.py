@@ -21,8 +21,10 @@ def we_oauth2(request):
         return render(request, 'django_we/errmsg.html', {'errmsg': 'Redirect or Default URL Should Exists'})
 
     if request.wechat:
+        if hasattr(settings, 'DJANGO_WE_CFG_FUNC') and hasattr(settings.DJANGO_WE_CFG_FUNC, '__call__'):
+            CFG = settings.DJANGO_WE_CFG_FUNC(request, redirect_url) or JSAPI
         redirect_uri = settings.WECHAT_USERINFO_REDIRECT_URI if scope == 'snsapi_userinfo' else settings.WECHAT_BASE_REDIRECT_URI
-        return redirect(get_oauth_code_url(JSAPI['appID'], redirect_uri, scope, redirect_url))
+        return redirect(get_oauth_code_url(CFG['appID'], redirect_uri, scope, redirect_url))
 
     return redirect(default_url or redirect_url)
 
@@ -32,7 +34,10 @@ def base_redirect(request):
     code = request.GET.get('code', '')
     state = request.GET.get('state', '')
 
-    access_info = get_access_info(JSAPI['appID'], JSAPI['appsecret'], code)
+    if hasattr(settings, 'DJANGO_WE_CFG_FUNC') and hasattr(settings.DJANGO_WE_CFG_FUNC, '__call__'):
+        CFG = settings.DJANGO_WE_CFG_FUNC(request, state) or JSAPI
+
+    access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
         return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_base', state))
 
@@ -48,7 +53,10 @@ def userinfo_redirect(request):
     code = request.GET.get('code', '')
     state = request.GET.get('state', '')
 
-    access_info = get_access_info(JSAPI['appID'], JSAPI['appsecret'], code)
+    if hasattr(settings, 'DJANGO_WE_CFG_FUNC') and hasattr(settings.DJANGO_WE_CFG_FUNC, '__call__'):
+        CFG = settings.DJANGO_WE_CFG_FUNC(request, state) or JSAPI
+
+    access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
         return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_userinfo', state))
 
@@ -65,4 +73,6 @@ def userinfo_redirect(request):
 
 @auto_response
 def we_jsapi_signature_api(request):
-    return jsapi_signature_params(JSAPI['appID'], JSAPI['appsecret'], request.GET.get('url', '') or request.POST.get('url', ''))
+    if hasattr(settings, 'DJANGO_WE_CFG_FUNC') and hasattr(settings.DJANGO_WE_CFG_FUNC, '__call__'):
+        CFG = settings.DJANGO_WE_CFG_FUNC(request) or JSAPI
+    return jsapi_signature_params(CFG['appID'], CFG['appsecret'], request.GET.get('url', '') or request.POST.get('url', ''))
