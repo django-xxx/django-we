@@ -28,6 +28,8 @@ or::
         url(r'^oauth2$', we_views.we_oauth2, name='we_oauth2'),
         url(r'^base_redirect$', we_views.base_redirect, name='base_redirect'),
         url(r'^userinfo_redirect$', we_views.userinfo_redirect, name='userinfo_redirect'),
+        url(r'^direct_base_redirect$', we_views.direct_base_redirect, name='direct_base_redirect'),
+        url(r'^direct_userinfo_redirect$', we_views.direct_userinfo_redirect, name='direct_userinfo_redirect'),
     ]
 
     # WeChat Share
@@ -71,7 +73,9 @@ Settings.py
     DJANGO_WE_OAUTH_CFG = 'JSAPI'  # Default ``JSAPI``
 
     # Based on Urls.py
+    WECHAT_OAUTH2_REDIRECT_URI = 'https://we.com/we/we_oauth2?scope={}&redirect_url={}'
     WECHAT_BASE_REDIRECT_URI = 'https://we.com/we/base_redirect'
     WECHAT_USERINFO_REDIRECT_URI = 'https://we.com/we/userinfo_redirect'
-    WECHAT_OAUTH2_REDIRECT_URI = 'https://we.com/we/we_oauth2?scope={}&redirect_url={}'
+    WECHAT_DIRECT_BASE_REDIRECT_URI = 'https://we.com/we/direct_base_redirect'
+    WECHAT_DIRECT_USERINFO_REDIRECT_URI = 'https://we.com/we/direct_userinfo_redirect'
 

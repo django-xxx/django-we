@@ -12,6 +12,8 @@ urlpatterns = [
     url(r'^we_oauth2$', we_views.we_oauth2, name='we_oauth2'),
     url(r'^base_redirect$', we_views.base_redirect, name='base_redirect'),
     url(r'^userinfo_redirect$', we_views.userinfo_redirect, name='userinfo_redirect'),
+    url(r'^direct_base_redirect$', we_views.direct_base_redirect, name='direct_base_redirect'),
+    url(r'^direct_userinfo_redirect$', we_views.direct_userinfo_redirect, name='direct_userinfo_redirect'),
 ]
 
 # WeChat Share

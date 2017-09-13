@@ -16,6 +16,7 @@ def we_oauth2(request):
     scope = request.GET.get('scope', 'snsapi_userinfo')
     redirect_url = request.GET.get('redirect_url', '')
     default_url = request.GET.get('default_url', '')
+    direct_redirect = bool(request.GET.get('direct_redirect', ''))
 
     if not (redirect_url or default_url):
         return render(request, 'django_we/errmsg.html', {'errmsg': 'Redirect or Default URL Should Exists'})
@@ -24,7 +25,10 @@ def we_oauth2(request):
         CFG = JSAPI
         if hasattr(settings, 'DJANGO_WE_CFG_FUNC') and hasattr(settings.DJANGO_WE_CFG_FUNC, '__call__'):
             CFG = settings.DJANGO_WE_CFG_FUNC(request, redirect_url) or JSAPI
-        redirect_uri = settings.WECHAT_USERINFO_REDIRECT_URI if scope == 'snsapi_userinfo' else settings.WECHAT_BASE_REDIRECT_URI
+        if direct_redirect:
+            redirect_uri = settings.WECHAT_DIRECT_USERINFO_REDIRECT_URI if scope == 'snsapi_userinfo' else settings.WECHAT_DIRECT_BASE_REDIRECT_URI
+        else:
+            redirect_uri = settings.WECHAT_USERINFO_REDIRECT_URI if scope == 'snsapi_userinfo' else settings.WECHAT_BASE_REDIRECT_URI
         return redirect(get_oauth_code_url(CFG['appID'], redirect_uri, scope, redirect_url))
 
     return redirect(default_url or redirect_url)
@@ -72,6 +76,40 @@ def userinfo_redirect(request):
         query_params = settings.DJANGO_WE_USERINFO_FUNC(code, state, access_info, userinfo)
 
     return redirect(furl(state).add(userinfo).add(query_params).url)
+
+
+def direct_base_redirect(request):
+    code = request.GET.get('code', '')
+    state = request.GET.get('state', '')
+
+    CFG = JSAPI
+    if hasattr(settings, 'DJANGO_WE_CFG_FUNC') and hasattr(settings.DJANGO_WE_CFG_FUNC, '__call__'):
+        CFG = settings.DJANGO_WE_CFG_FUNC(request, state) or JSAPI
+
+    access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
+    if 'errcode' in access_info:
+        return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_base', state, direct_redirect=True))
+
+    return redirect(furl(state).add(access_info).url)
+
+
+def direct_userinfo_redirect(request):
+    code = request.GET.get('code', '')
+    state = request.GET.get('state', '')
+
+    CFG = JSAPI
+    if hasattr(settings, 'DJANGO_WE_CFG_FUNC') and hasattr(settings.DJANGO_WE_CFG_FUNC, '__call__'):
+        CFG = settings.DJANGO_WE_CFG_FUNC(request, state) or JSAPI
+
+    access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
+    if 'errcode' in access_info:
+        return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_userinfo', state, direct_redirect=True))
+
+    userinfo = get_userinfo(access_info.get('access_token', ''), access_info.get('openid', ''))
+    if 'openid' not in userinfo:
+        return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_userinfo', state, direct_redirect=True))
+
+    return redirect(furl(state).add(userinfo).url)
 
 
 @auto_response
