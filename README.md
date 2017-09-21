@@ -28,6 +28,7 @@ urlpatterns = [
 
 # WeChat Share
 urlpatterns += [
+    url(r'^weshare$', we_views.we_share, name='we_share'),
     url(r'^jsapi_signature$', we_views.we_jsapi_signature_api, name='we_jsapi_signature_api'),
 ]
 ```
@@ -69,4 +70,7 @@ WECHAT_BASE_REDIRECT_URI = 'https://we.com/we/base_redirect'
 WECHAT_USERINFO_REDIRECT_URI = 'https://we.com/we/userinfo_redirect'
 WECHAT_DIRECT_BASE_REDIRECT_URI = 'https://we.com/we/direct_base_redirect'
 WECHAT_DIRECT_USERINFO_REDIRECT_URI = 'https://we.com/we/direct_userinfo_redirect'
+
+# Temp Share Page to Redirect
+WECHAT_OAUTH2_REDIRECT_URL = ''
 ```

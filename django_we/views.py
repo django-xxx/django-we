@@ -112,6 +112,10 @@ def direct_userinfo_redirect(request):
     return redirect(furl(state).add(userinfo).url)
 
 
+def we_share(reqeust):
+    return redirect(settings.WECHAT_OAUTH2_REDIRECT_URL)
+
+
 @auto_response
 def we_jsapi_signature_api(request):
     CFG = JSAPI

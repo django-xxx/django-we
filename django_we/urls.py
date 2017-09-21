@@ -18,5 +18,6 @@ urlpatterns = [
 
 # WeChat Share
 urlpatterns += [
+    url(r'^weshare$', we_views.we_share, name='we_share'),
     url(r'^jsapi_signature$', we_views.we_jsapi_signature_api, name='we_jsapi_signature_api'),  # JSAPI Signature
 ]
