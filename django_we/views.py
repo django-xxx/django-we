@@ -19,7 +19,7 @@ def we_oauth2(request):
     direct_redirect = bool(request.GET.get('direct_redirect', ''))
 
     if not (redirect_url or default_url):
-        return render(request, 'django_we/errmsg.html', {'errmsg': 'Redirect or Default URL Should Exists'})
+        return render(request, 'django_we/errmsg.html', {'title': 'Error', 'errmsg': 'Redirect or Default URL Should Exists'})
 
     if request.wechat:
         CFG = JSAPI
@@ -112,8 +112,19 @@ def direct_userinfo_redirect(request):
     return redirect(furl(state).add(userinfo).url)
 
 
-def we_share(reqeust):
-    return redirect(settings.WECHAT_OAUTH2_REDIRECT_URL)
+def we_share(request):
+    redirect_url = ''
+
+    if hasattr(settings, 'WECHAT_OAUTH2_REDIRECT_URL'):
+        redirect_url = settings.WECHAT_OAUTH2_REDIRECT_URL
+
+    if hasattr(settings, 'DJANGO_WE_SHARE_FUNC') and hasattr(settings.DJANGO_WE_SHARE_FUNC, '__call__'):
+        redirect_url = settings.DJANGO_WE_SHARE_FUNC(request)
+
+    if not redirect_url:
+        return render(request, 'django_we/errmsg.html', {'title': 'Error', 'errmsg': 'Redirect URL Should Exists'})
+
+    return redirect(redirect_url)
 
 
 @auto_response

@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Error</title>
+    <title>{{ title|default:"Error" }}</title>
 </head>
 <body>
-    <div style="text-align:center;font-size:50px"><h>{{ errmsg }}</h></div>
+    <div style="text-align:center;font-size:50px"><h>{{ errmsg|default:"Error" }}</h></div>
 </body>
 </html>
