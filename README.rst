@@ -24,6 +24,10 @@ Urls.py
 
 or::
 
+    from django.conf.urls import include, url
+    from django_we import views as we_views
+
+    # WecChat OAuth2
     urlpatterns = [
         url(r'^oauth2$', we_views.we_oauth2, name='we_oauth2'),
         url(r'^base_redirect$', we_views.base_redirect, name='base_redirect'),
