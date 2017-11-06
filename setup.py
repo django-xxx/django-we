@@ -10,7 +10,7 @@ setup(
     name='django-we',
     version=version,
     keywords='django-we',
-    description='Django WeChat OAuth2/Share API',
+    description='Django WeChat OAuth2/Share/Token API',
     long_description=open('README.rst').read(),
 
     url='https://github.com/django-xxx/django-we',

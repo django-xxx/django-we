@@ -22,7 +22,7 @@ urlpatterns += [
     url(r'^jsapi_signature$', we_views.we_jsapi_signature_api, name='we_jsapi_signature_api'),  # JSAPI Signature
 ]
 
-# Other
+# WeChat Token
 urlpatterns += [
     url(r'^token$', we_views.we_access_token, name='we_access_token'),
     url(r'^access_token$', we_views.we_access_token, name='we_access_token'),
