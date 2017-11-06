@@ -7,9 +7,17 @@ from furl import furl
 from json_response import auto_response
 from pywe_jssdk import jsapi_signature_params
 from pywe_oauth import get_access_info, get_oauth_code_url, get_oauth_redirect_url, get_userinfo
+from pywe_token import access_token
 
 
 JSAPI = settings.WECHAT.get(getattr(settings, 'DJANGO_WE_OAUTH_CFG') if hasattr(settings, 'DJANGO_WE_OAUTH_CFG') else 'JSAPI', {})
+
+
+def final_cfg(request, state=None):
+    CFG = JSAPI
+    if hasattr(settings, 'DJANGO_WE_CFG_FUNC') and hasattr(settings.DJANGO_WE_CFG_FUNC, '__call__'):
+        CFG = settings.DJANGO_WE_CFG_FUNC(request, state) or JSAPI
+    return CFG
 
 
 def we_oauth2(request):
@@ -22,9 +30,7 @@ def we_oauth2(request):
         return render(request, 'django_we/errmsg.html', {'title': 'Error', 'errmsg': 'Redirect or Default URL Should Exists'})
 
     if request.wechat:
-        CFG = JSAPI
-        if hasattr(settings, 'DJANGO_WE_CFG_FUNC') and hasattr(settings.DJANGO_WE_CFG_FUNC, '__call__'):
-            CFG = settings.DJANGO_WE_CFG_FUNC(request, redirect_url) or JSAPI
+        CFG = final_cfg(request, redirect_url)
         if direct_redirect:
             redirect_uri = settings.WECHAT_DIRECT_USERINFO_REDIRECT_URI if scope == 'snsapi_userinfo' else settings.WECHAT_DIRECT_BASE_REDIRECT_URI
         else:
@@ -39,9 +45,7 @@ def base_redirect(request):
     code = request.GET.get('code', '')
     state = request.GET.get('state', '')
 
-    CFG = JSAPI
-    if hasattr(settings, 'DJANGO_WE_CFG_FUNC') and hasattr(settings.DJANGO_WE_CFG_FUNC, '__call__'):
-        CFG = settings.DJANGO_WE_CFG_FUNC(request, state) or JSAPI
+    CFG = final_cfg(request, state)
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
@@ -59,9 +63,7 @@ def userinfo_redirect(request):
     code = request.GET.get('code', '')
     state = request.GET.get('state', '')
 
-    CFG = JSAPI
-    if hasattr(settings, 'DJANGO_WE_CFG_FUNC') and hasattr(settings.DJANGO_WE_CFG_FUNC, '__call__'):
-        CFG = settings.DJANGO_WE_CFG_FUNC(request, state) or JSAPI
+    CFG = final_cfg(request, state)
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
@@ -82,9 +84,7 @@ def direct_base_redirect(request):
     code = request.GET.get('code', '')
     state = request.GET.get('state', '')
 
-    CFG = JSAPI
-    if hasattr(settings, 'DJANGO_WE_CFG_FUNC') and hasattr(settings.DJANGO_WE_CFG_FUNC, '__call__'):
-        CFG = settings.DJANGO_WE_CFG_FUNC(request, state) or JSAPI
+    CFG = final_cfg(request, state)
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
@@ -97,9 +97,7 @@ def direct_userinfo_redirect(request):
     code = request.GET.get('code', '')
     state = request.GET.get('state', '')
 
-    CFG = JSAPI
-    if hasattr(settings, 'DJANGO_WE_CFG_FUNC') and hasattr(settings.DJANGO_WE_CFG_FUNC, '__call__'):
-        CFG = settings.DJANGO_WE_CFG_FUNC(request, state) or JSAPI
+    CFG = final_cfg(request, state)
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
@@ -129,7 +127,13 @@ def we_share(request):
 
 @auto_response
 def we_jsapi_signature_api(request):
-    CFG = JSAPI
-    if hasattr(settings, 'DJANGO_WE_CFG_FUNC') and hasattr(settings.DJANGO_WE_CFG_FUNC, '__call__'):
-        CFG = settings.DJANGO_WE_CFG_FUNC(request) or JSAPI
+    CFG = final_cfg(request)
     return jsapi_signature_params(CFG['appID'], CFG['appsecret'], request.GET.get('url', '') or request.POST.get('url', ''))
+
+
+@auto_response
+def we_access_token(request):
+    CFG = final_cfg(request)
+    return {
+        'access_token': access_token(CFG['appID'], CFG['appsecret']),
+    }
