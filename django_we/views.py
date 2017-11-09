@@ -20,6 +20,18 @@ def final_cfg(request, state=None):
     return CFG
 
 
+def quote_state(request, state=None):
+    if hasattr(settings, 'DJANGO_WE_QUOTE_STATE_FUNC') and hasattr(settings.DJANGO_WE_QUOTE_STATE_FUNC, '__call__'):
+        state = settings.DJANGO_WE_QUOTE_STATE_FUNC(request, state)
+    return state
+
+
+def unquote_state(request, state=None):
+    if hasattr(settings, 'DJANGO_WE_UNQUOTE_STATE_FUNC') and hasattr(settings.DJANGO_WE_UNQUOTE_STATE_FUNC, '__call__'):
+        state = settings.DJANGO_WE_UNQUOTE_STATE_FUNC(request, state)
+    return state
+
+
 def we_oauth2(request):
     scope = request.GET.get('scope', 'snsapi_userinfo')
     redirect_url = request.GET.get('redirect_url', '')
@@ -35,7 +47,7 @@ def we_oauth2(request):
             redirect_uri = settings.WECHAT_DIRECT_USERINFO_REDIRECT_URI if scope == 'snsapi_userinfo' else settings.WECHAT_DIRECT_BASE_REDIRECT_URI
         else:
             redirect_uri = settings.WECHAT_USERINFO_REDIRECT_URI if scope == 'snsapi_userinfo' else settings.WECHAT_BASE_REDIRECT_URI
-        return redirect(get_oauth_code_url(CFG['appID'], redirect_uri, scope, redirect_url))
+        return redirect(get_oauth_code_url(CFG['appID'], redirect_uri, scope, quote_state(request, redirect_url)))
 
     return redirect(default_url or redirect_url)
 
@@ -45,7 +57,9 @@ def base_redirect(request):
     code = request.GET.get('code', '')
     state = request.GET.get('state', '')
 
-    CFG = final_cfg(request, state)
+    final_state = unquote_state(request, state)
+
+    CFG = final_cfg(request, final_state)
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
@@ -53,9 +67,9 @@ def base_redirect(request):
 
     query_params = {}
     if hasattr(settings, 'DJANGO_WE_BASE_FUNC') and hasattr(settings.DJANGO_WE_BASE_FUNC, '__call__'):
-        query_params = settings.DJANGO_WE_BASE_FUNC(code, state, access_info)
+        query_params = settings.DJANGO_WE_BASE_FUNC(code, final_state, access_info)
 
-    return redirect(furl(state).add(access_info).add(query_params).url)
+    return redirect(furl(final_state).add(access_info).add(query_params).url)
 
 
 @transaction.atomic
@@ -63,7 +77,9 @@ def userinfo_redirect(request):
     code = request.GET.get('code', '')
     state = request.GET.get('state', '')
 
-    CFG = final_cfg(request, state)
+    final_state = unquote_state(request, state)
+
+    CFG = final_cfg(request, final_state)
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
@@ -75,29 +91,33 @@ def userinfo_redirect(request):
 
     query_params = {}
     if hasattr(settings, 'DJANGO_WE_USERINFO_FUNC') and hasattr(settings.DJANGO_WE_USERINFO_FUNC, '__call__'):
-        query_params = settings.DJANGO_WE_USERINFO_FUNC(code, state, access_info, userinfo)
+        query_params = settings.DJANGO_WE_USERINFO_FUNC(code, final_state, access_info, userinfo)
 
-    return redirect(furl(state).add(userinfo).add(query_params).url)
+    return redirect(furl(final_state).add(userinfo).add(query_params).url)
 
 
 def direct_base_redirect(request):
     code = request.GET.get('code', '')
     state = request.GET.get('state', '')
 
-    CFG = final_cfg(request, state)
+    final_state = unquote_state(request, state)
+
+    CFG = final_cfg(request, final_state)
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
         return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_base', state, direct_redirect=True))
 
-    return redirect(furl(state).add(access_info).url)
+    return redirect(furl(final_state).add(access_info).url)
 
 
 def direct_userinfo_redirect(request):
     code = request.GET.get('code', '')
     state = request.GET.get('state', '')
 
-    CFG = final_cfg(request, state)
+    final_state = unquote_state(request, state)
+
+    CFG = final_cfg(request, final_state)
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
@@ -107,7 +127,7 @@ def direct_userinfo_redirect(request):
     if 'openid' not in userinfo:
         return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_userinfo', state, direct_redirect=True))
 
-    return redirect(furl(state).add(userinfo).url)
+    return redirect(furl(final_state).add(userinfo).url)
 
 
 def we_share(request):
