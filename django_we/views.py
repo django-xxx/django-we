@@ -32,6 +32,41 @@ def unquote_state(request, state=None):
     return state
 
 
+def final_oauth_uri(request, state=None):
+    oauth_uri = settings.WECHAT_OAUTH2_REDIRECT_URI
+    if hasattr(settings, 'DJANGO_WE_OAUTH2_REDIRECT_URI_FUNC') and hasattr(settings.DJANGO_WE_OAUTH2_REDIRECT_URI_FUNC, '__call__'):
+        oauth_uri = settings.DJANGO_WE_OAUTH2_REDIRECT_URI_FUNC(request, state)
+    return oauth_uri
+
+
+def final_direct_userinfo_redirect_uri(request):
+    redirect_uri = settings.WECHAT_DIRECT_USERINFO_REDIRECT_URI
+    if hasattr(settings, 'DJANGO_WE_DIRECT_USERINFO_REDIRECT_URI_FUNC') and hasattr(settings.DJANGO_WE_DIRECT_USERINFO_REDIRECT_URI_FUNC, '__call__'):
+        redirect_uri = settings.DJANGO_WE_DIRECT_USERINFO_REDIRECT_URI_FUNC(request)
+    return redirect_uri
+
+
+def final_direct_base_redirect_uri(request):
+    redirect_uri = settings.WECHAT_DIRECT_BASE_REDIRECT_URI
+    if hasattr(settings, 'DJANGO_WE_DIRECT_BASE_REDIRECT_URI_FUNC') and hasattr(settings.DJANGO_WE_DIRECT_BASE_REDIRECT_URI_FUNC, '__call__'):
+        redirect_uri = settings.DJANGO_WE_DIRECT_BASE_REDIRECT_URI_FUNC(request)
+    return redirect_uri
+
+
+def final_userinfo_redirect_uri(request):
+    redirect_uri = settings.WECHAT_USERINFO_REDIRECT_URI
+    if hasattr(settings, 'DJANGO_WE_USERINFO_REDIRECT_URI_FUNC') and hasattr(settings.DJANGO_WE_USERINFO_REDIRECT_URI_FUNC, '__call__'):
+        redirect_uri = settings.DJANGO_WE_USERINFO_REDIRECT_URI_FUNC(request)
+    return redirect_uri
+
+
+def final_base_redirect_uri(request):
+    redirect_uri = settings.WECHAT_BASE_REDIRECT_URI
+    if hasattr(settings, 'DJANGO_WE_BASE_REDIRECT_URI_FUNC') and hasattr(settings.DJANGO_WE_BASE_REDIRECT_URI_FUNC, '__call__'):
+        redirect_uri = settings.DJANGO_WE_BASE_REDIRECT_URI_FUNC(request)
+    return redirect_uri
+
+
 def we_oauth2(request):
     scope = request.GET.get('scope', 'snsapi_userinfo')
     redirect_url = request.GET.get('redirect_url', '')
@@ -44,9 +79,9 @@ def we_oauth2(request):
     if request.wechat:
         CFG = final_cfg(request, redirect_url)
         if direct_redirect:
-            redirect_uri = settings.WECHAT_DIRECT_USERINFO_REDIRECT_URI if scope == 'snsapi_userinfo' else settings.WECHAT_DIRECT_BASE_REDIRECT_URI
+            redirect_uri = final_direct_userinfo_redirect_uri(request) if scope == 'snsapi_userinfo' else final_direct_base_redirect_uri(request)
         else:
-            redirect_uri = settings.WECHAT_USERINFO_REDIRECT_URI if scope == 'snsapi_userinfo' else settings.WECHAT_BASE_REDIRECT_URI
+            redirect_uri = final_userinfo_redirect_uri(request) if scope == 'snsapi_userinfo' else final_base_redirect_uri(request)
         return redirect(get_oauth_code_url(CFG['appID'], redirect_uri, scope, quote_state(request, redirect_url)))
 
     return redirect(default_url or redirect_url)
@@ -63,7 +98,7 @@ def base_redirect(request):
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
-        return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_base', state))
+        return redirect(get_oauth_redirect_url(final_oauth_uri(request, state), 'snsapi_base', state))
 
     query_params = {}
     if hasattr(settings, 'DJANGO_WE_BASE_FUNC') and hasattr(settings.DJANGO_WE_BASE_FUNC, '__call__'):
@@ -83,11 +118,11 @@ def userinfo_redirect(request):
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
-        return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_userinfo', state))
+        return redirect(get_oauth_redirect_url(final_oauth_uri(request, state), 'snsapi_userinfo', state))
 
     userinfo = get_userinfo(access_info.get('access_token', ''), access_info.get('openid', ''))
     if 'openid' not in userinfo:
-        return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_userinfo', state))
+        return redirect(get_oauth_redirect_url(final_oauth_uri(request, state), 'snsapi_userinfo', state))
 
     query_params = {}
     if hasattr(settings, 'DJANGO_WE_USERINFO_FUNC') and hasattr(settings.DJANGO_WE_USERINFO_FUNC, '__call__'):
@@ -106,7 +141,7 @@ def direct_base_redirect(request):
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
-        return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_base', state, direct_redirect=True))
+        return redirect(get_oauth_redirect_url(final_oauth_uri(request, state), 'snsapi_base', state, direct_redirect=True))
 
     return redirect(furl(final_state).add(access_info).url)
 
@@ -121,11 +156,11 @@ def direct_userinfo_redirect(request):
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
-        return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_userinfo', state, direct_redirect=True))
+        return redirect(get_oauth_redirect_url(final_oauth_uri(request, state), 'snsapi_userinfo', state, direct_redirect=True))
 
     userinfo = get_userinfo(access_info.get('access_token', ''), access_info.get('openid', ''))
     if 'openid' not in userinfo:
-        return redirect(get_oauth_redirect_url(settings.WECHAT_OAUTH2_REDIRECT_URI, 'snsapi_userinfo', state, direct_redirect=True))
+        return redirect(get_oauth_redirect_url(final_oauth_uri(request, state), 'snsapi_userinfo', state, direct_redirect=True))
 
     return redirect(furl(final_state).add(userinfo).url)
 
