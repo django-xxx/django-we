@@ -126,7 +126,7 @@ def userinfo_redirect(request):
 
     query_params = {}
     if hasattr(settings, 'DJANGO_WE_USERINFO_FUNC') and hasattr(settings.DJANGO_WE_USERINFO_FUNC, '__call__'):
-        query_params = settings.DJANGO_WE_USERINFO_FUNC(code, final_state, access_info, userinfo)
+        query_params = settings.DJANGO_WE_USERINFO_FUNC(code, final_state, access_info, userinfo) or {}
 
     return redirect(furl(final_state).remove(userinfo.keys()).add(userinfo).remove(query_params.keys()).add(query_params).url)
 
