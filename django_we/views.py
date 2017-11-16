@@ -128,7 +128,7 @@ def userinfo_redirect(request):
     if hasattr(settings, 'DJANGO_WE_USERINFO_FUNC') and hasattr(settings.DJANGO_WE_USERINFO_FUNC, '__call__'):
         query_params = settings.DJANGO_WE_USERINFO_FUNC(code, final_state, access_info, userinfo)
 
-    return redirect(furl(final_state).add(userinfo).add(query_params).url)
+    return redirect(furl(final_state).remove(userinfo.keys()).add(userinfo).remove(query_params.keys()).add(query_params).url)
 
 
 def direct_base_redirect(request):
@@ -143,7 +143,7 @@ def direct_base_redirect(request):
     if 'errcode' in access_info:
         return redirect(get_oauth_redirect_url(final_oauth_uri(request, state), 'snsapi_base', state, direct_redirect=True))
 
-    return redirect(furl(final_state).add(access_info).url)
+    return redirect(furl(final_state).remove(access_info.keys()).add(access_info).url)
 
 
 def direct_userinfo_redirect(request):
@@ -162,7 +162,7 @@ def direct_userinfo_redirect(request):
     if 'openid' not in userinfo:
         return redirect(get_oauth_redirect_url(final_oauth_uri(request, state), 'snsapi_userinfo', state, direct_redirect=True))
 
-    return redirect(furl(final_state).add(userinfo).url)
+    return redirect(furl(final_state).remove(userinfo.keys()).add(userinfo).url)
 
 
 def we_share(request):
