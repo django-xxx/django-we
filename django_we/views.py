@@ -98,7 +98,7 @@ def base_redirect(request):
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
-        return redirect(get_oauth_redirect_url(final_oauth_uri(request, state), 'snsapi_base', state))
+        return redirect(get_oauth_redirect_url(final_oauth_uri(request, final_state), 'snsapi_base', final_state))
 
     query_params = {}
     if hasattr(settings, 'DJANGO_WE_BASE_FUNC') and hasattr(settings.DJANGO_WE_BASE_FUNC, '__call__'):
@@ -118,11 +118,11 @@ def userinfo_redirect(request):
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
-        return redirect(get_oauth_redirect_url(final_oauth_uri(request, state), 'snsapi_userinfo', state))
+        return redirect(get_oauth_redirect_url(final_oauth_uri(request, final_state), 'snsapi_userinfo', final_state))
 
     userinfo = get_userinfo(access_info.get('access_token', ''), access_info.get('openid', ''))
     if 'openid' not in userinfo:
-        return redirect(get_oauth_redirect_url(final_oauth_uri(request, state), 'snsapi_userinfo', state))
+        return redirect(get_oauth_redirect_url(final_oauth_uri(request, final_state), 'snsapi_userinfo', final_state))
 
     query_params = {}
     if hasattr(settings, 'DJANGO_WE_USERINFO_FUNC') and hasattr(settings.DJANGO_WE_USERINFO_FUNC, '__call__'):
@@ -141,7 +141,7 @@ def direct_base_redirect(request):
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
-        return redirect(get_oauth_redirect_url(final_oauth_uri(request, state), 'snsapi_base', state, direct_redirect=True))
+        return redirect(get_oauth_redirect_url(final_oauth_uri(request, final_state), 'snsapi_base', final_state, direct_redirect=True))
 
     return redirect(furl(final_state).remove(access_info.keys()).add(access_info).url)
 
@@ -156,11 +156,11 @@ def direct_userinfo_redirect(request):
 
     access_info = get_access_info(CFG['appID'], CFG['appsecret'], code)
     if 'errcode' in access_info:
-        return redirect(get_oauth_redirect_url(final_oauth_uri(request, state), 'snsapi_userinfo', state, direct_redirect=True))
+        return redirect(get_oauth_redirect_url(final_oauth_uri(request, final_state), 'snsapi_userinfo', final_state, direct_redirect=True))
 
     userinfo = get_userinfo(access_info.get('access_token', ''), access_info.get('openid', ''))
     if 'openid' not in userinfo:
-        return redirect(get_oauth_redirect_url(final_oauth_uri(request, state), 'snsapi_userinfo', state, direct_redirect=True))
+        return redirect(get_oauth_redirect_url(final_oauth_uri(request, final_state), 'snsapi_userinfo', final_state, direct_redirect=True))
 
     return redirect(furl(final_state).remove(userinfo.keys()).add(userinfo).url)
 
