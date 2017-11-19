@@ -93,3 +93,23 @@ Settings.py
     # Temp Share Page to Redirect
     WECHAT_OAUTH2_REDIRECT_URL = ''
 
+
+Wechat_Only
+===========
+
+::
+
+    # Settings.py
+    MIDDLEWARE = [
+        ...
+        'detect.middleware.UserAgentDetectionMiddleware',
+        ...
+    ]
+
+    # Usage
+    from django_we.decorators import wechat_only
+
+    @wechat_only
+    def xxx(request):
+        """ Docstring """
+

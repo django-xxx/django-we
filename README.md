@@ -80,3 +80,21 @@ WECHAT_DIRECT_USERINFO_REDIRECT_URI = 'https://we.com/we/direct_userinfo_redirec
 # Temp Share Page to Redirect
 WECHAT_OAUTH2_REDIRECT_URL = ''
 ```
+
+## Wechat_Only
+* Settings.py
+  ```python
+  MIDDLEWARE = [
+      ...
+      'detect.middleware.UserAgentDetectionMiddleware',
+      ...
+  ]
+  ```
+* Usage
+  ```python
+  from django_we.decorators import wechat_only
+
+  @wechat_only
+  def xxx(request):
+      """ Docstring """
+  ```
