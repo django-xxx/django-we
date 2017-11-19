@@ -89,6 +89,8 @@ WECHAT_OAUTH2_REDIRECT_URL = ''
       'detect.middleware.UserAgentDetectionMiddleware',
       ...
   ]
+
+  WECHAT_ONLY = True  # Default False
   ```
 * Usage
   ```python

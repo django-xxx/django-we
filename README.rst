@@ -106,6 +106,8 @@ Wechat_Only
         ...
     ]
 
+    WECHAT_ONLY = True  # Default False
+
     # Usage
     from django_we.decorators import wechat_only
 

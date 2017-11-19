@@ -11,7 +11,8 @@ def wechat_only(func=None):
         @wraps(func)
         def returned_wrapper(request, *args, **kwargs):
             if not settings.DEBUG and hasattr(request, 'wechat') and getattr(request, 'wechat'):
-                return render(request, 'django_we/errmsg.html', {'title': '错误', 'errmsg': '请在微信中打开'})
+                if not (hasattr(request, 'WECHAT_ONLY') and not getattr(request, 'WECHAT_ONLY')):
+                    return render(request, 'django_we/errmsg.html', {'title': '错误', 'errmsg': '请在微信中打开'})
             return func(request, *args, **kwargs)
         return returned_wrapper
 
