@@ -71,9 +71,9 @@ def final_base_redirect_uri(request):
 
 def we_oauth2(request):
     scope = request.GET.get('scope', 'snsapi_userinfo')
-    redirect_url = request.GET.get('redirect_url', '')
-    default_url = request.GET.get('default_url', '')
-    direct_redirect = bool(request.GET.get('direct_redirect', ''))
+    redirect_url = request.GET.get('redirect_url', '') or request.GET.get('r', '')
+    default_url = request.GET.get('default_url', '') or request.GET.get('d', '')
+    direct_redirect = bool(request.GET.get('direct_redirect', '') or request.GET.get('dr', ''))
 
     if not (redirect_url or default_url):
         return render(request, 'django_we/errmsg.html', {'title': 'Error', 'errmsg': 'Redirect or Default URL Should Exists'})
