@@ -70,7 +70,7 @@ def final_base_redirect_uri(request):
 
 
 def we_oauth2(request):
-    scope = request.GET.get('scope', 'snsapi_userinfo')
+    scope = request.GET.get('scope', 'snsapi_userinfo') or request.GET.get('s', '')
     redirect_url = request.GET.get('redirect_url', '') or request.GET.get('r', '')
     default_url = request.GET.get('default_url', '') or request.GET.get('d', '')
     direct_redirect = bool(request.GET.get('direct_redirect', '') or request.GET.get('dr', ''))
