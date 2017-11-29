@@ -174,7 +174,7 @@ def we_share(request):
         redirect_url = settings.WECHAT_OAUTH2_REDIRECT_URL
 
     if hasattr(settings, 'DJANGO_WE_SHARE_FUNC') and hasattr(settings.DJANGO_WE_SHARE_FUNC, '__call__'):
-        redirect_url = settings.DJANGO_WE_SHARE_FUNC(request)
+        redirect_url = settings.DJANGO_WE_SHARE_FUNC(request) or redirect_url
 
     if not redirect_url:
         return render(request, 'django_we/errmsg.html', {'title': 'Error', 'errmsg': 'Redirect URL Should Exists'})
