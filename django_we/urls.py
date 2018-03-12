@@ -10,6 +10,12 @@ urlpatterns = [
     url(r'^oauth$', we_views.we_oauth2, name='shorten_oauth'),
     url(r'^oauth2$', we_views.we_oauth2, name='shorten_oauth2'),
     url(r'^we_oauth2$', we_views.we_oauth2, name='we_oauth2'),
+
+    url(r'^br$', we_views.base_redirect, name='shorten_base_redirect'),
+    url(r'^ur$', we_views.userinfo_redirect, name='shorten_userinfo_redirect'),
+    url(r'^dbr$', we_views.direct_base_redirect, name='shorten_direct_base_redirect'),
+    url(r'^dur$', we_views.direct_userinfo_redirect, name='shorten_direct_userinfo_redirect'),
+
     url(r'^base_redirect$', we_views.base_redirect, name='base_redirect'),
     url(r'^userinfo_redirect$', we_views.userinfo_redirect, name='userinfo_redirect'),
     url(r'^direct_base_redirect$', we_views.direct_base_redirect, name='direct_base_redirect'),
