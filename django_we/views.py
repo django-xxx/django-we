@@ -7,6 +7,7 @@ from furl import furl
 from json_response import auto_response
 from pywe_jssdk import jsapi_signature_params
 from pywe_oauth import get_access_info, get_oauth_code_url, get_oauth_redirect_url, get_userinfo
+
 from pywe_token import access_token
 
 
@@ -35,35 +36,35 @@ def unquote_state(request, state=None):
 
 
 def final_oauth_uri(request, state=None):
-    oauth_uri = settings.WECHAT_OAUTH2_REDIRECT_URI
+    oauth_uri = hasattr(settings, 'WECHAT_OAUTH2_REDIRECT_URI') and settings.WECHAT_OAUTH2_REDIRECT_URI or ''
     if hasattr(settings, 'DJANGO_WE_OAUTH2_REDIRECT_URI_FUNC') and hasattr(settings.DJANGO_WE_OAUTH2_REDIRECT_URI_FUNC, '__call__'):
         oauth_uri = settings.DJANGO_WE_OAUTH2_REDIRECT_URI_FUNC(request, state)
     return oauth_uri
 
 
 def final_direct_userinfo_redirect_uri(request):
-    redirect_uri = settings.WECHAT_DIRECT_USERINFO_REDIRECT_URI
+    redirect_uri = hasattr(settings, 'WECHAT_DIRECT_USERINFO_REDIRECT_URI') and settings.WECHAT_DIRECT_USERINFO_REDIRECT_URI or ''
     if hasattr(settings, 'DJANGO_WE_DIRECT_USERINFO_REDIRECT_URI_FUNC') and hasattr(settings.DJANGO_WE_DIRECT_USERINFO_REDIRECT_URI_FUNC, '__call__'):
         redirect_uri = settings.DJANGO_WE_DIRECT_USERINFO_REDIRECT_URI_FUNC(request)
     return redirect_uri
 
 
 def final_direct_base_redirect_uri(request):
-    redirect_uri = settings.WECHAT_DIRECT_BASE_REDIRECT_URI
+    redirect_uri = hasattr(settings, 'WECHAT_DIRECT_BASE_REDIRECT_URI') and settings.WECHAT_DIRECT_BASE_REDIRECT_URI or ''
     if hasattr(settings, 'DJANGO_WE_DIRECT_BASE_REDIRECT_URI_FUNC') and hasattr(settings.DJANGO_WE_DIRECT_BASE_REDIRECT_URI_FUNC, '__call__'):
         redirect_uri = settings.DJANGO_WE_DIRECT_BASE_REDIRECT_URI_FUNC(request)
     return redirect_uri
 
 
 def final_userinfo_redirect_uri(request):
-    redirect_uri = settings.WECHAT_USERINFO_REDIRECT_URI
+    redirect_uri = hasattr(settings, 'WECHAT_USERINFO_REDIRECT_URI') and settings.WECHAT_USERINFO_REDIRECT_URI or ''
     if hasattr(settings, 'DJANGO_WE_USERINFO_REDIRECT_URI_FUNC') and hasattr(settings.DJANGO_WE_USERINFO_REDIRECT_URI_FUNC, '__call__'):
         redirect_uri = settings.DJANGO_WE_USERINFO_REDIRECT_URI_FUNC(request)
     return redirect_uri
 
 
 def final_base_redirect_uri(request):
-    redirect_uri = settings.WECHAT_BASE_REDIRECT_URI
+    redirect_uri = hasattr(settings, 'WECHAT_BASE_REDIRECT_URI') and settings.WECHAT_BASE_REDIRECT_URI or ''
     if hasattr(settings, 'DJANGO_WE_BASE_REDIRECT_URI_FUNC') and hasattr(settings.DJANGO_WE_BASE_REDIRECT_URI_FUNC, '__call__'):
         redirect_uri = settings.DJANGO_WE_BASE_REDIRECT_URI_FUNC(request)
     return redirect_uri
