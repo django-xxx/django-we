@@ -22,12 +22,16 @@ def final_cfg(request, state=None):
 
 
 def quote_state(request, state=None):
+    if hasattr(settings, 'DJANGO_WE_QUOTE_OR_NOT') and not hasattr(settings, 'DJANGO_WE_QUOTE_OR_NOT'):
+        return state
     if hasattr(settings, 'DJANGO_WE_QUOTE_STATE_FUNC') and hasattr(settings.DJANGO_WE_QUOTE_STATE_FUNC, '__call__'):
         state = settings.DJANGO_WE_QUOTE_STATE_FUNC(request, state)
     return state
 
 
 def unquote_state(request, state=None):
+    if hasattr(settings, 'DJANGO_WE_QUOTE_OR_NOT') and not hasattr(settings, 'DJANGO_WE_QUOTE_OR_NOT'):
+        return state
     if hasattr(settings, 'DJANGO_WE_UNQUOTE_STATE_FUNC') and hasattr(settings.DJANGO_WE_UNQUOTE_STATE_FUNC, '__call__'):
         state = settings.DJANGO_WE_UNQUOTE_STATE_FUNC(request, state)
     if not state and hasattr(settings, 'WECHAT_DEFAULT_REDIRECT_URI'):
