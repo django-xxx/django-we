@@ -221,6 +221,6 @@ def we_callback(request):
     xml = request.body
 
     if hasattr(settings, 'DJANGO_WE_MESSAGE_CALLBACK_FUNC') and hasattr(settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC, '__call__'):
-        settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC(xml_to_dict(xml))
+        settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC(request, xml_to_dict(xml))
 
     return HttpResponse()
