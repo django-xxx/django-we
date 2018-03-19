@@ -39,3 +39,8 @@ urlpatterns += [
     url(r'^token$', we_views.we_access_token, name='we_token'),
     url(r'^access_token$', we_views.we_access_token, name='we_access_token'),
 ]
+
+# WeChat Callback
+urlpatterns += [
+    url(r'^callback$', we_views.we_callback, name='we_callback'),
+]

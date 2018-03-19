@@ -2,11 +2,14 @@
 
 from django.conf import settings
 from django.db import transaction
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from furl import furl
 from json_response import auto_response
 from pywe_jssdk import jsapi_signature_params
 from pywe_oauth import get_access_info, get_oauth_code_url, get_oauth_redirect_url, get_userinfo
+from pywe_sign import check_callback_signature
+from pywe_xml import xml_to_dict
 
 from pywe_token import access_token
 
@@ -199,3 +202,25 @@ def we_access_token(request):
     return {
         'access_token': access_token(CFG['appID'], CFG['appsecret']),
     }
+
+
+def we_callback(request):
+    signature = request.GET.get('signature', '')
+    timestamp = request.GET.get('timestamp', '')
+    nonce = request.GET.get('nonce', '')
+    echostr = request.GET.get('echostr', '')
+    encrypt_type = request.GET.get('encrypt_type', '')
+    msg_signature = request.GET.get('msg_signature', '')
+
+    CFG = final_cfg(request)
+
+    if request.method == 'GET':
+        return HttpResponse(echostr if check_callback_signature(CFG['token'], signature, timestamp, nonce) else '')
+
+    # TODO: Support Encrypted XML
+    xml = request.body
+
+    if hasattr(settings, 'DJANGO_WE_MESSAGE_CALLBACK_FUNC') and hasattr(settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC, '__call__'):
+        settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC(xml_to_dict(xml))
+
+    return HttpResponse()
