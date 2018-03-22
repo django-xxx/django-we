@@ -42,5 +42,9 @@ urlpatterns += [
 
 # WeChat Callback
 urlpatterns += [
+    url(r'^cb$', we_views.we_callback, name='shorten_we_callback'),
     url(r'^callback$', we_views.we_callback, name='we_callback'),
+
+    url(r'^cc/(?P<appid>.+)$', we_views.we_component_callback, name='shorten_we_component_callback'),
+    url(r'^component_callback/(?P<appid>.+)$', we_views.we_component_callback, name='we_component_callback'),
 ]

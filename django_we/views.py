@@ -224,3 +224,13 @@ def we_callback(request):
         settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC(request, xml_to_dict(xml))
 
     return HttpResponse()
+
+
+def we_component_callback(request):
+    # TODO: Support Encrypted XML
+    xml = request.body
+
+    if hasattr(settings, 'DJANGO_WE_COMPONENT_CALLBACK_FUNC') and hasattr(settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC, '__call__'):
+        settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC(request, xml_to_dict(xml))
+
+    return HttpResponse('success')
