@@ -226,11 +226,21 @@ def we_callback(request):
     return HttpResponse()
 
 
-def we_component_callback(request):
+def we_component_auth(request):
+    # TODO: Support Encrypted XML
+    xml = request.body
+
+    if hasattr(settings, 'DJANGO_WE_COMPONENT_AUTH_FUNC') and hasattr(settings.DJANGO_WE_COMPONENT_AUTH_FUNC, '__call__'):
+        settings.DJANGO_WE_COMPONENT_AUTH_FUNC(request, xml_to_dict(xml))
+
+    return HttpResponse('success')
+
+
+def we_component_callback(request, appid=None):
     # TODO: Support Encrypted XML
     xml = request.body
 
     if hasattr(settings, 'DJANGO_WE_COMPONENT_CALLBACK_FUNC') and hasattr(settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC, '__call__'):
-        settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC(request, xml_to_dict(xml))
+        settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC(request, appid, xml_to_dict(xml))
 
-    return HttpResponse('success')
+    return HttpResponse()
