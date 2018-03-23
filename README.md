@@ -92,6 +92,9 @@ WECHAT_DIRECT_USERINFO_REDIRECT_URI = 'https://we.com/we/direct_userinfo_redirec
 WECHAT_OAUTH2_REDIRECT_URL = ''
 ```
 
+# Callbacks
+* [See Examples](https://github.com/django-xxx/django-project-templet-cn/blob/master/templet/templet/oauth_settings.py)
+
 ## Wechat_Only
 * Settings.py
   ```python
