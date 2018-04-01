@@ -6,9 +6,11 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from furl import furl
 from json_response import auto_response
+from pywe_component_ticket import set_component_verify_ticket
 from pywe_jssdk import jsapi_signature_params
 from pywe_oauth import get_access_info, get_oauth_code_url, get_oauth_redirect_url, get_userinfo
 from pywe_sign import check_callback_signature
+from pywe_storage import RedisStorage
 from pywe_xml import xml_to_dict
 
 from pywe_token import access_token
@@ -75,6 +77,13 @@ def final_base_redirect_uri(request):
     if hasattr(settings, 'DJANGO_WE_BASE_REDIRECT_URI_FUNC') and hasattr(settings.DJANGO_WE_BASE_REDIRECT_URI_FUNC, '__call__'):
         redirect_uri = settings.DJANGO_WE_BASE_REDIRECT_URI_FUNC(request)
     return redirect_uri
+
+
+def redis_storage(request):
+    r = None
+    if hasattr(settings, 'DJANGO_WE_REDIS_OBJ_FUNC') and hasattr(settings.DJANGO_WE_REDIS_OBJ_FUNC, '__call__'):
+        r = settings.DJANGO_WE_REDIS_OBJ_FUNC(request)
+    return r and RedisStorage(r)
 
 
 def we_oauth2(request):
@@ -214,8 +223,12 @@ def we_callback(request):
 
     CFG = final_cfg(request)
 
+    # 校验签名
+    if not check_callback_signature(CFG['token'], signature, timestamp, nonce):
+        return HttpResponse()
+
     if request.method == 'GET':
-        return HttpResponse(echostr if check_callback_signature(CFG['token'], signature, timestamp, nonce) else '')
+        return HttpResponse(echostr)
 
     # TODO: Support Encrypted XML
     xml = request.body
@@ -227,8 +240,34 @@ def we_callback(request):
 
 
 def we_component_auth(request):
+    signature = request.GET.get('signature', '')
+    timestamp = request.GET.get('timestamp', '')
+    nonce = request.GET.get('nonce', '')
+    encrypt_type = request.GET.get('encrypt_type', '')
+    msg_signature = request.GET.get('msg_signature', '')
+
+    CFG = final_cfg(request, state='component')
+
+    # 校验签名
+    if not check_callback_signature(CFG['token'], signature, timestamp, nonce):
+        return HttpResponse()
+
     # TODO: Support Encrypted XML
     xml = request.body
+
+    # Set Component Verify Ticket into Redis
+    set_component_verify_ticket(
+        appid=CFG['appid'],
+        secret=CFG['appsecret'],
+        token=CFG['token'],
+        encodingaeskey=CFG['encodingaeskey'],
+        post_data=xml,
+        encrypt=None,
+        msg_signature=msg_signature,
+        timestamp=timestamp,
+        nonce=nonce,
+        storage=redis_storage(request),
+    )
 
     if hasattr(settings, 'DJANGO_WE_COMPONENT_AUTH_FUNC') and hasattr(settings.DJANGO_WE_COMPONENT_AUTH_FUNC, '__call__'):
         settings.DJANGO_WE_COMPONENT_AUTH_FUNC(request, xml_to_dict(xml))
@@ -237,6 +276,18 @@ def we_component_auth(request):
 
 
 def we_component_callback(request, appid=None):
+    signature = request.GET.get('signature', '')
+    timestamp = request.GET.get('timestamp', '')
+    nonce = request.GET.get('nonce', '')
+    encrypt_type = request.GET.get('encrypt_type', '')
+    msg_signature = request.GET.get('msg_signature', '')
+
+    CFG = final_cfg(request)
+
+    # 校验签名
+    if not check_callback_signature(CFG['token'], signature, timestamp, nonce):
+        return HttpResponse()
+
     # TODO: Support Encrypted XML
     xml = request.body
 

@@ -20,7 +20,7 @@ setup(
 
     packages=['django_we'],
     py_modules=[],
-    install_requires=['django-detect', 'django-json-response', 'furl', 'pywe-jssdk', 'pywe-oauth>=1.0.5', 'pywe-sign>=1.0.7', 'pywe-token', 'pywe-xml'],
+    install_requires=['django-detect', 'django-json-response', 'furl', 'pywe_component_ticket', 'pywe-jssdk', 'pywe-oauth>=1.0.5', 'pywe-sign>=1.0.7', 'pywe_storage', 'pywe-token', 'pywe-xml'],
     include_package_data=True,
 
     classifiers=[

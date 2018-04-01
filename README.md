@@ -93,7 +93,7 @@ WECHAT_OAUTH2_REDIRECT_URL = ''
 ```
 
 # Callbacks
-* [See Examples](https://github.com/django-xxx/django-project-templet-cn/blob/master/templet/templet/oauth_settings.py)
+* [See django_we_callback_settings.py](https://github.com/django-xxx/django-project-templet-cn/blob/master/templet/templet/django_we_callback_settings.py)
 
 ## Wechat_Only
 * Settings.py
