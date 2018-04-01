@@ -257,7 +257,7 @@ def we_component_auth(request):
 
     # Set Component Verify Ticket into Redis
     set_component_verify_ticket(
-        appid=CFG['appid'],
+        appid=CFG['appID'],
         secret=CFG['appsecret'],
         token=CFG['token'],
         encodingaeskey=CFG['encodingaeskey'],
