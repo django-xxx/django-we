@@ -81,8 +81,13 @@ def final_base_redirect_uri(request):
 
 def redis_storage(request):
     r = None
+
+    if hasattr(settings, 'WECHAT_REDIS_OBJ'):
+        r = settings.WECHAT_REDIS_OBJ
+
     if hasattr(settings, 'DJANGO_WE_REDIS_OBJ_FUNC') and hasattr(settings.DJANGO_WE_REDIS_OBJ_FUNC, '__call__'):
-        r = settings.DJANGO_WE_REDIS_OBJ_FUNC(request)
+        r = settings.DJANGO_WE_REDIS_OBJ_FUNC(request) or r
+
     return r and RedisStorage(r)
 
 
