@@ -9,14 +9,14 @@ from furl import furl
 from json_response import auto_response
 from pywe_component_authorizer_token import authorizer_access_token, initial_authorizer_access_token
 from pywe_component_ticket import set_component_verify_ticket
+from pywe_decrypt import msg
 from pywe_jssdk import jsapi_signature_params
 from pywe_oauth import get_access_info, get_oauth_code_url, get_oauth_redirect_url, get_userinfo
 from pywe_qrcode import qrcode_create
 from pywe_sign import check_callback_signature
 from pywe_storage import RedisStorage
-from pywe_xml import xml_to_dict
-
 from pywe_token import access_token
+from pywe_xml import xml_to_dict
 
 
 JSAPI = settings.WECHAT.get(getattr(settings, 'DJANGO_WE_OAUTH_CFG') if hasattr(settings, 'DJANGO_WE_OAUTH_CFG') else 'JSAPI', {})
@@ -239,11 +239,10 @@ def we_callback(request):
     if request.method == 'GET':
         return HttpResponse(echostr)
 
-    # TODO: Support Encrypted XML
     xml = request.body
 
     if hasattr(settings, 'DJANGO_WE_MESSAGE_CALLBACK_FUNC') and hasattr(settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC, '__call__'):
-        settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC(request, xml_to_dict(xml))
+        settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC(request, xml_to_dict(xml), msg.decrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], post_data=xml, encrypt=None, msg_signature=msg_signature, timestamp=timestamp, nonce=nonce))
 
     return HttpResponse()
 
@@ -262,7 +261,6 @@ def we_component_auth(request):
     if not check_callback_signature(CFG['token'], signature, timestamp, nonce):
         return HttpResponse()
 
-    # TODO: Support Encrypted XML
     xml = request.body
 
     # Set Component Verify Ticket into Redis
@@ -280,7 +278,7 @@ def we_component_auth(request):
     )
 
     if hasattr(settings, 'DJANGO_WE_COMPONENT_AUTH_FUNC') and hasattr(settings.DJANGO_WE_COMPONENT_AUTH_FUNC, '__call__'):
-        settings.DJANGO_WE_COMPONENT_AUTH_FUNC(request, xml_to_dict(xml))
+        settings.DJANGO_WE_COMPONENT_AUTH_FUNC(request, xml_to_dict(xml), msg.decrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], post_data=xml, encrypt=None, msg_signature=msg_signature, timestamp=timestamp, nonce=nonce))
 
     return HttpResponse('success')
 
@@ -299,11 +297,10 @@ def we_component_callback(request, appid=None):
     if not check_callback_signature(CFG['token'], signature, timestamp, nonce):
         return HttpResponse()
 
-    # TODO: Support Encrypted XML
     xml = request.body
 
     if hasattr(settings, 'DJANGO_WE_COMPONENT_CALLBACK_FUNC') and hasattr(settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC, '__call__'):
-        settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC(request, appid, xml_to_dict(xml))
+        settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC(request, appid, xml_to_dict(xml), msg.decrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], post_data=xml, encrypt=None, msg_signature=msg_signature, timestamp=timestamp, nonce=nonce))
 
     return HttpResponse()
 
