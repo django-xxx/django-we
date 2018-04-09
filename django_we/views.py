@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django_logit import logit
 from furl import furl
 from json_response import auto_response
 from pywe_component_ticket import set_component_verify_ticket
@@ -218,6 +219,7 @@ def we_access_token(request):
     }
 
 
+@logit(body=True, res=True)
 def we_callback(request):
     signature = request.GET.get('signature', '')
     timestamp = request.GET.get('timestamp', '')
@@ -244,6 +246,7 @@ def we_callback(request):
     return HttpResponse()
 
 
+@logit(body=True, res=True)
 def we_component_auth(request):
     signature = request.GET.get('signature', '')
     timestamp = request.GET.get('timestamp', '')
@@ -280,6 +283,7 @@ def we_component_auth(request):
     return HttpResponse('success')
 
 
+@logit(body=True, res=True)
 def we_component_callback(request, appid=None):
     signature = request.GET.get('signature', '')
     timestamp = request.GET.get('timestamp', '')
