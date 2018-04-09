@@ -319,6 +319,7 @@ def we_preauth_callback(request):
     return HttpResponse()
 
 
+@auto_response
 def we_qrcode_url(request, state=None):
     authorizer_appid = request.GET.get('authorizer_appid', '')
     action_name = request.GET.get('action_name', 'QR_SCENE')
