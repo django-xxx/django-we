@@ -242,7 +242,8 @@ def we_callback(request):
     xml = request.body
 
     if hasattr(settings, 'DJANGO_WE_MESSAGE_CALLBACK_FUNC') and hasattr(settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC, '__call__'):
-        settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC(request, xml_to_dict(xml), msg.decrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], post_data=xml, encrypt=None, msg_signature=msg_signature, timestamp=timestamp, nonce=nonce, xmltodict=True))
+        decrypted = msg.decrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], post_data=xml, encrypt=None, msg_signature=msg_signature, timestamp=timestamp, nonce=nonce, xmltodict=True)
+        settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC(request, xml_to_dict(xml), decrypted or {})
 
     return HttpResponse()
 
@@ -278,7 +279,8 @@ def we_component_auth(request):
     )
 
     if hasattr(settings, 'DJANGO_WE_COMPONENT_AUTH_FUNC') and hasattr(settings.DJANGO_WE_COMPONENT_AUTH_FUNC, '__call__'):
-        settings.DJANGO_WE_COMPONENT_AUTH_FUNC(request, xml_to_dict(xml), msg.decrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], post_data=xml, encrypt=None, msg_signature=msg_signature, timestamp=timestamp, nonce=nonce, xmltodict=True))
+        decrypted = msg.decrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], post_data=xml, encrypt=None, msg_signature=msg_signature, timestamp=timestamp, nonce=nonce, xmltodict=True)
+        settings.DJANGO_WE_COMPONENT_AUTH_FUNC(request, xml_to_dict(xml), decrypted or {})
 
     return HttpResponse('success')
 
@@ -300,7 +302,8 @@ def we_component_callback(request, appid=None):
     xml = request.body
 
     if hasattr(settings, 'DJANGO_WE_COMPONENT_CALLBACK_FUNC') and hasattr(settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC, '__call__'):
-        settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC(request, appid, xml_to_dict(xml), msg.decrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], post_data=xml, encrypt=None, msg_signature=msg_signature, timestamp=timestamp, nonce=nonce, xmltodict=True))
+        decrypted = msg.decrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], post_data=xml, encrypt=None, msg_signature=msg_signature, timestamp=timestamp, nonce=nonce, xmltodict=True)
+        settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC(request, appid, xml_to_dict(xml), decrypted or {})
 
     return HttpResponse()
 
