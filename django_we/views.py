@@ -7,9 +7,11 @@ from django.shortcuts import redirect, render
 from django_logit import logit
 from furl import furl
 from json_response import auto_response
+from pywe_component_authorizer_token import authorizer_access_token, initial_authorizer_access_token
 from pywe_component_ticket import set_component_verify_ticket
 from pywe_jssdk import jsapi_signature_params
 from pywe_oauth import get_access_info, get_oauth_code_url, get_oauth_redirect_url, get_userinfo
+from pywe_qrcode import qrcode_create
 from pywe_sign import check_callback_signature
 from pywe_storage import RedisStorage
 from pywe_xml import xml_to_dict
@@ -304,3 +306,33 @@ def we_component_callback(request, appid=None):
         settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC(request, appid, xml_to_dict(xml))
 
     return HttpResponse()
+
+
+@logit(body=True, res=True)
+def we_preauth_callback(request):
+    auth_code = request.GET.get('auth_code', '')
+
+    CFG = final_cfg(request, state='component')
+
+    initial_authorizer_access_token(component_appid=CFG['appID'], component_secret=CFG['appsecret'], auth_code=auth_code, storage=redis_storage(request))
+
+    return HttpResponse()
+
+
+def we_qrcode_url(request, state=None):
+    authorizer_appid = request.GET.get('authorizer_appid', '')
+    action_name = request.GET.get('action_name', 'QR_SCENE')
+    scene_id = int(request.GET.get('scene_id', 0))
+    scene_str = request.GET.get('scene_str', '')
+    expire_seconds = int(request.GET.get('expire_seconds', 2592000))
+
+    CFG = final_cfg(request, state=state)
+
+    if state == 'component':
+        token = authorizer_access_token(component_appid=CFG['appID'], component_secret=CFG['appsecret'], authorizer_appid=authorizer_appid, storage=redis_storage(request))
+    else:
+        token = access_token(CFG['appID'], CFG['appsecret'])
+
+    return {
+        'qrinfo': qrcode_create(action_name=action_name, scene_id=scene_id, scene_str=scene_str, expire_seconds=expire_seconds, appid=CFG['appID'], secret=CFG['appsecret'], token=token, storage=redis_storage(request)),
+    }

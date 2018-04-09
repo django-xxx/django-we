@@ -47,7 +47,10 @@ urlpatterns += [
     # 必须以http://或https://开头，分别支持80端口和443端口。
     url(r'^cb$', we_views.we_callback, name='shorten_we_callback'),
     url(r'^callback$', we_views.we_callback, name='we_callback'),
+]
 
+# WeChat Component Callback
+urlpatterns += [
     # 第三方平台
     # 授权事件接收URL
     # 用于接收取消授权通知、授权成功通知、授权更新通知，也用于接收ticket，ticket是验证平台方的重要凭据。
@@ -59,4 +62,15 @@ urlpatterns += [
     # 通过该URL接收公众号或小程序消息和事件推送，该参数按规则填写（需包含/$APPID$，如www.abc.com/$APPID$/callback），实际接收消息时$APPID$将被替换为公众号或小程序AppId。
     url(r'^cc/(?P<appid>.+)$', we_views.we_component_callback, name='shorten_we_component_callback'),
     url(r'^component_callback/(?P<appid>.+)$', we_views.we_component_callback, name='we_component_callback'),
+
+    # https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1453779503&token=&lang=zh_CN
+    # 步骤4：授权后回调URI，得到授权码（authorization_code）和过期时间
+    # 授权流程完成后，授权页会自动跳转进入回调URI，并在URL参数中返回授权码和过期时间(redirect_url?auth_code=xxx&expires_in=600)
+    url(r'^cp$', we_views.we_preauth_callback, name='shorten_we_preauth_callback'),
+    url(r'^component_preauth$', we_views.we_preauth_callback, name='we_preauth_callback'),
+]
+
+# WeChat Common/Component APIs
+urlpatterns += [
+    url(r'^qrurl/(?P<state>.*)$', we_views.we_qrcode_url, name='we_qrcode_url'),
 ]
