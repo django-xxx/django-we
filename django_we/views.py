@@ -221,6 +221,7 @@ def we_access_token(request):
     }
 
 
+@transaction.atomic
 @logit(body=True, res=True)
 def we_callback(request):
     signature = request.GET.get('signature', '')
@@ -248,6 +249,7 @@ def we_callback(request):
     return HttpResponse()
 
 
+@transaction.atomic
 @logit(body=True, res=True)
 def we_component_auth(request):
     signature = request.GET.get('signature', '')
@@ -285,6 +287,7 @@ def we_component_auth(request):
     return HttpResponse('success')
 
 
+@transaction.atomic
 @logit(body=True, res=True)
 def we_component_callback(request, appid=None):
     signature = request.GET.get('signature', '')
