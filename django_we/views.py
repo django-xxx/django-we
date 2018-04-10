@@ -293,7 +293,7 @@ def we_component_callback(request, appid=None):
     encrypt_type = request.GET.get('encrypt_type', '')
     msg_signature = request.GET.get('msg_signature', '')
 
-    CFG = final_cfg(request)
+    CFG = final_cfg(request, state='component')
 
     # 校验签名
     if not check_callback_signature(CFG['token'], signature, timestamp, nonce):
