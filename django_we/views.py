@@ -242,12 +242,15 @@ def we_callback(request):
 
     xml = request.body
 
-    resp = ''
+    resp_xml = ''
     if hasattr(settings, 'DJANGO_WE_MESSAGE_CALLBACK_FUNC') and hasattr(settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC, '__call__'):
         decrypted = msg.decrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], post_data=xml, encrypt=None, msg_signature=msg_signature, timestamp=timestamp, nonce=nonce, xmltodict=True)
-        resp = settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC(request, xml_to_dict(xml), decrypted or {}) or ''
+        resp_xml = settings.DJANGO_WE_MESSAGE_CALLBACK_FUNC(request, xml_to_dict(xml), decrypted or {}) or ''
 
-    return HttpResponse(resp or 'success')
+    if resp_xml:
+        resp_xml = msg.encrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], resp_xml=resp_xml, nonce=nonce, timestamp=None, random_str=None)
+
+    return HttpResponse(resp_xml or 'success')
 
 
 @transaction.atomic
@@ -281,12 +284,15 @@ def we_component_auth(request):
         storage=redis_storage(request),
     )
 
-    resp = ''
+    resp_xml = ''
     if hasattr(settings, 'DJANGO_WE_COMPONENT_AUTH_FUNC') and hasattr(settings.DJANGO_WE_COMPONENT_AUTH_FUNC, '__call__'):
         decrypted = msg.decrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], post_data=xml, encrypt=None, msg_signature=msg_signature, timestamp=timestamp, nonce=nonce, xmltodict=True)
-        resp = settings.DJANGO_WE_COMPONENT_AUTH_FUNC(request, xml_to_dict(xml), decrypted or {}) or ''
+        resp_xml = settings.DJANGO_WE_COMPONENT_AUTH_FUNC(request, xml_to_dict(xml), decrypted or {}) or ''
 
-    return HttpResponse(resp or 'success')
+    if resp_xml:
+        resp_xml = msg.encrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], resp_xml=resp_xml, nonce=nonce, timestamp=None, random_str=None)
+
+    return HttpResponse(resp_xml or 'success')
 
 
 @transaction.atomic
@@ -306,12 +312,15 @@ def we_component_callback(request, appid=None):
 
     xml = request.body
 
-    resp = ''
+    resp_xml = ''
     if hasattr(settings, 'DJANGO_WE_COMPONENT_CALLBACK_FUNC') and hasattr(settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC, '__call__'):
         decrypted = msg.decrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], post_data=xml, encrypt=None, msg_signature=msg_signature, timestamp=timestamp, nonce=nonce, xmltodict=True)
-        resp = settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC(request, appid, xml_to_dict(xml), decrypted or {}) or ''
+        resp_xml = settings.DJANGO_WE_COMPONENT_CALLBACK_FUNC(request, appid, xml_to_dict(xml), decrypted or {}) or ''
 
-    return HttpResponse(resp or 'success')
+    if resp_xml:
+        resp_xml = msg.encrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], resp_xml=resp_xml, nonce=nonce, timestamp=None, random_str=None)
+
+    return HttpResponse(resp_xml or 'success')
 
 
 @logit(body=True, res=True)
