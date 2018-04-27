@@ -210,14 +210,14 @@ def we_share(request):
 @auto_response
 def we_jsapi_signature_api(request):
     CFG = final_cfg(request)
-    return jsapi_signature_params(CFG['appID'], CFG['appsecret'], request.GET.get('url', '') or request.POST.get('url', ''))
+    return jsapi_signature_params(CFG['appID'], CFG['appsecret'], request.GET.get('url', '') or request.POST.get('url', ''), storage=redis_storage(request))
 
 
 @auto_response
 def we_access_token(request):
     CFG = final_cfg(request)
     return {
-        'access_token': access_token(CFG['appID'], CFG['appsecret']),
+        'access_token': access_token(CFG['appID'], CFG['appsecret'], storage=redis_storage(request)),
     }
 
 
@@ -347,7 +347,7 @@ def we_qrcode_url(request, state=None):
     if state == 'component':
         token = authorizer_access_token(component_appid=CFG['appID'], component_secret=CFG['appsecret'], authorizer_appid=authorizer_appid, storage=redis_storage(request))
     else:
-        token = access_token(CFG['appID'], CFG['appsecret'])
+        token = access_token(CFG['appID'], CFG['appsecret'], storage=redis_storage(request))
 
     return {
         'qrinfo': qrcode_create(action_name=action_name, scene_id=scene_id, scene_str=scene_str, expire_seconds=expire_seconds, appid=CFG['appID'], secret=CFG['appsecret'], token=token, storage=redis_storage(request)),
