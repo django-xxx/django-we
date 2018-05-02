@@ -1,4 +1,32 @@
+# -*- coding: utf-8 -*-
+
 from django.contrib import admin
+from django_admin import ReadOnlyModelAdmin
+from django_we.models import (ComponentAuthTokenRefreshLogInfo, ComponentTokenRefreshLogInfo, TicketRefreshLogInfo,
+                              TokenRefreshLogInfo)
 
 
-# Register your models here.
+class TokenRefreshLogInfoAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):
+    list_display = ('appid', 'secret', 'access_info', 'status', 'created_at', 'updated_at')
+    list_filter = ('appid', 'status')
+
+
+class TicketRefreshLogInfoAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):
+    list_display = ('appid', 'secret', 'ticket_type', 'ticket_info', 'status', 'created_at', 'updated_at')
+    list_filter = ('appid', 'ticket_type', 'status')
+
+
+class ComponentTokenRefreshLogInfoAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):
+    list_display = ('component_appid', 'component_secret', 'component_access_info', 'status', 'created_at', 'updated_at')
+    list_filter = ('component_appid', 'status')
+
+
+class ComponentAuthTokenRefreshLogInfoAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):
+    list_display = ('component_appid', 'component_secret', 'authorizer_appid', 'component_authorizer_access_info', 'status', 'created_at', 'updated_at')
+    list_filter = ('component_appid', 'authorizer_appid', 'status')
+
+
+admin.site.register(TokenRefreshLogInfo, TokenRefreshLogInfoAdmin)
+admin.site.register(TicketRefreshLogInfo, TicketRefreshLogInfoAdmin)
+admin.site.register(ComponentTokenRefreshLogInfo, ComponentTokenRefreshLogInfoAdmin)
+admin.site.register(ComponentAuthTokenRefreshLogInfo, ComponentAuthTokenRefreshLogInfoAdmin)

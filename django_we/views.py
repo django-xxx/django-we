@@ -5,6 +5,8 @@ from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django_logit import logit
+from django_we.models import (ComponentAuthTokenRefreshLogInfo, ComponentTokenRefreshLogInfo, TicketRefreshLogInfo,
+                              TokenRefreshLogInfo)
 from furl import furl
 from json_response import auto_response
 from pywe_component_authorizer_token import authorizer_access_token, initial_authorizer_access_token
@@ -92,6 +94,28 @@ def redis_storage(request):
         r = settings.DJANGO_WE_REDIS_OBJ_FUNC(request) or r
 
     return r and RedisStorage(r)
+
+
+# Token/Ticket Store into Database after Fetched/Refreshed
+def token_fetched_func(appid, secret, access_info):
+    TokenRefreshLogInfo.objects.create(appid=appid, secret=secret, access_info=access_info)
+
+
+def ticket_fetched_func(appid, secret, type, ticket_info):
+    TicketRefreshLogInfo.objects.create(appid=appid, secret=secret, type=type, ticket_info=ticket_info)
+
+
+def component_token_fetched_func(appid, secret, access_info):
+    ComponentTokenRefreshLogInfo.objects.create(component_appid=appid, component_secret=secret, component_access_info=access_info)
+
+
+def component_auth_token_fetched_func(component_appid, component_secret, authorizer_appid, component_authorizer_access_info):
+    ComponentAuthTokenRefreshLogInfo.objects.create(
+        component_appid=component_appid,
+        component_secret=component_secret,
+        authorizer_appid=authorizer_appid,
+        component_authorizer_access_info=component_authorizer_access_info
+    )
 
 
 def we_oauth2(request):
@@ -210,14 +234,26 @@ def we_share(request):
 @auto_response
 def we_jsapi_signature_api(request):
     CFG = final_cfg(request)
-    return jsapi_signature_params(CFG['appID'], CFG['appsecret'], request.GET.get('url', '') or request.POST.get('url', ''), storage=redis_storage(request))
+    return jsapi_signature_params(
+        CFG['appID'],
+        CFG['appsecret'],
+        request.GET.get('url', '') or request.POST.get('url', ''),
+        storage=redis_storage(request),
+        token_fetched_func=token_fetched_func,
+        ticket_fetched_func=ticket_fetched_func
+    )
 
 
 @auto_response
 def we_access_token(request):
     CFG = final_cfg(request)
     return {
-        'access_token': access_token(CFG['appID'], CFG['appsecret'], storage=redis_storage(request)),
+        'access_token': access_token(
+            CFG['appID'],
+            CFG['appsecret'],
+            storage=redis_storage(request),
+            token_fetched_func=token_fetched_func
+        ),
     }
 
 
@@ -329,7 +365,14 @@ def we_preauth_callback(request):
 
     CFG = final_cfg(request, state='component')
 
-    initial_authorizer_access_token(component_appid=CFG['appID'], component_secret=CFG['appsecret'], auth_code=auth_code, storage=redis_storage(request))
+    initial_authorizer_access_token(
+        component_appid=CFG['appID'],
+        component_secret=CFG['appsecret'],
+        auth_code=auth_code,
+        storage=redis_storage(request),
+        token_fetched_func=component_token_fetched_func,
+        auth_token_fetched_func=component_auth_token_fetched_func
+    )
 
     return HttpResponse()
 
@@ -345,10 +388,31 @@ def we_qrcode_url(request, state=None):
     CFG = final_cfg(request, state=state)
 
     if state == 'component':
-        token = authorizer_access_token(component_appid=CFG['appID'], component_secret=CFG['appsecret'], authorizer_appid=authorizer_appid, storage=redis_storage(request))
+        token = authorizer_access_token(
+            component_appid=CFG['appID'],
+            component_secret=CFG['appsecret'],
+            authorizer_appid=authorizer_appid,
+            storage=redis_storage(request),
+            token_fetched_func=component_token_fetched_func,
+            auth_token_fetched_func=component_auth_token_fetched_func
+        )
     else:
-        token = access_token(CFG['appID'], CFG['appsecret'], storage=redis_storage(request))
+        token = access_token(
+            CFG['appID'],
+            CFG['appsecret'],
+            storage=redis_storage(request),
+            token_fetched_func=token_fetched_func
+        )
 
     return {
-        'qrinfo': qrcode_create(action_name=action_name, scene_id=scene_id, scene_str=scene_str, expire_seconds=expire_seconds, appid=CFG['appID'], secret=CFG['appsecret'], token=token, storage=redis_storage(request)),
+        'qrinfo': qrcode_create(
+            action_name=action_name,
+            scene_id=scene_id,
+            scene_str=scene_str,
+            expire_seconds=expire_seconds,
+            appid=CFG['appID'],
+            secret=CFG['appsecret'],
+            token=token,
+            storage=redis_storage(request)
+        ),
     }
