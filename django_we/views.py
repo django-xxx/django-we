@@ -101,8 +101,8 @@ def token_fetched_func(appid, secret, access_info):
     TokenRefreshLogInfo.objects.create(appid=appid, secret=secret, access_info=access_info)
 
 
-def ticket_fetched_func(appid, secret, type, ticket_info):
-    TicketRefreshLogInfo.objects.create(appid=appid, secret=secret, type=type, ticket_info=ticket_info)
+def ticket_fetched_func(appid, secret, ticket_type, ticket_info):
+    TicketRefreshLogInfo.objects.create(appid=appid, secret=secret, ticket_type=ticket_type, ticket_info=ticket_info)
 
 
 def component_token_fetched_func(appid, secret, access_info):
