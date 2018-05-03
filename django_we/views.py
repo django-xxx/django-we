@@ -232,8 +232,8 @@ def we_share(request):
 
 
 @auto_response
-def we_jsapi_signature_api(request):
-    CFG = final_cfg(request)
+def we_jsapi_signature_api(request, state=None):
+    CFG = final_cfg(request, state=state or 'jsapi_signature')
     return jsapi_signature_params(
         CFG['appID'],
         CFG['appsecret'],
@@ -245,8 +245,8 @@ def we_jsapi_signature_api(request):
 
 
 @auto_response
-def we_access_token(request):
-    CFG = final_cfg(request)
+def we_access_token(request, state=None):
+    CFG = final_cfg(request, state=state or 'access_token')
     return {
         'access_token': access_token(
             CFG['appID'],
@@ -267,7 +267,7 @@ def we_callback(request):
     encrypt_type = request.GET.get('encrypt_type', '')
     msg_signature = request.GET.get('msg_signature', '')
 
-    CFG = final_cfg(request)
+    CFG = final_cfg(request, state='callback')
 
     # 校验签名
     if not check_callback_signature(CFG['token'], signature, timestamp, nonce):
@@ -298,7 +298,7 @@ def we_component_auth(request):
     encrypt_type = request.GET.get('encrypt_type', '')
     msg_signature = request.GET.get('msg_signature', '')
 
-    CFG = final_cfg(request, state='component')
+    CFG = final_cfg(request, state='component_auth')
 
     # 校验签名
     if not check_callback_signature(CFG['token'], signature, timestamp, nonce):
@@ -340,7 +340,7 @@ def we_component_callback(request, appid=None):
     encrypt_type = request.GET.get('encrypt_type', '')
     msg_signature = request.GET.get('msg_signature', '')
 
-    CFG = final_cfg(request, state='component')
+    CFG = final_cfg(request, state='component_callback')
 
     # 校验签名
     if not check_callback_signature(CFG['token'], signature, timestamp, nonce):
@@ -360,10 +360,10 @@ def we_component_callback(request, appid=None):
 
 
 @logit(body=True, res=True)
-def we_preauth_callback(request):
+def we_component_preauth_callback(request):
     auth_code = request.GET.get('auth_code', '')
 
-    CFG = final_cfg(request, state='component')
+    CFG = final_cfg(request, state='component_preauth_callback')
 
     initial_authorizer_access_token(
         component_appid=CFG['appID'],
@@ -385,7 +385,7 @@ def we_qrcode_url(request, state=None):
     scene_str = request.GET.get('scene_str', '')
     expire_seconds = int(request.GET.get('expire_seconds', 2592000))
 
-    CFG = final_cfg(request, state=state)
+    CFG = final_cfg(request, state=state or 'qrcode_url')
 
     if state == 'component':
         token = authorizer_access_token(

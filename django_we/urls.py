@@ -30,14 +30,14 @@ urlpatterns += [
 
 # WeChat JSAPI Signature
 urlpatterns += [
-    url(r'^js$', we_views.we_jsapi_signature_api, name='shorten_we_jsapi_signature_api'),
-    url(r'^jsapi_signature$', we_views.we_jsapi_signature_api, name='we_jsapi_signature_api'),
+    url(r'^js/(?P<state>.*)$', we_views.we_jsapi_signature_api, name='shorten_we_jsapi_signature_api'),
+    url(r'^jsapi_signature/(?P<state>.*)$', we_views.we_jsapi_signature_api, name='we_jsapi_signature_api'),
 ]
 
 # WeChat Token
 urlpatterns += [
-    url(r'^token$', we_views.we_access_token, name='we_token'),
-    url(r'^access_token$', we_views.we_access_token, name='we_access_token'),
+    url(r'^token/(?P<state>.*)$', we_views.we_access_token, name='we_token'),
+    url(r'^access_token/(?P<state>.*)$', we_views.we_access_token, name='we_access_token'),
 ]
 
 # WeChat Callback
@@ -66,8 +66,8 @@ urlpatterns += [
     # https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1453779503&token=&lang=zh_CN
     # 步骤4：授权后回调URI，得到授权码（authorization_code）和过期时间
     # 授权流程完成后，授权页会自动跳转进入回调URI，并在URL参数中返回授权码和过期时间(redirect_url?auth_code=xxx&expires_in=600)
-    url(r'^cp$', we_views.we_preauth_callback, name='shorten_we_preauth_callback'),
-    url(r'^component_preauth$', we_views.we_preauth_callback, name='we_preauth_callback'),
+    url(r'^cp$', we_views.we_component_preauth_callback, name='shorten_we_component_preauth_callback'),
+    url(r'^component_preauth$', we_views.we_component_preauth_callback, name='we_component_preauth_callback'),
 ]
 
 # WeChat Common/Component APIs
