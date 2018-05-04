@@ -98,32 +98,37 @@ def redis_storage(request):
 
 # Token/Ticket Store into Database after Fetched/Refreshed
 def token_fetched_func(appid, secret, access_info):
-    TokenRefreshLogInfo.objects.create(appid=appid, secret=secret, access_info=access_info)
+    if not hasattr(settings, 'DJANGO_WE_TOKEN_STORE_OR_NOT') or getattr(settings, 'DJANGO_WE_TOKEN_STORE_OR_NOT'):
+        TokenRefreshLogInfo.objects.create(appid=appid, secret=secret, access_info=access_info)
 
 
 def ticket_fetched_func(appid, secret, ticket_type, ticket_info):
-    TicketRefreshLogInfo.objects.create(appid=appid, secret=secret, ticket_type=ticket_type, ticket_info=ticket_info)
+    if not hasattr(settings, 'DJANGO_WE_TICKET_STORE_OR_NOT') or getattr(settings, 'DJANGO_WE_TICKET_STORE_OR_NOT'):
+        TicketRefreshLogInfo.objects.create(appid=appid, secret=secret, ticket_type=ticket_type, ticket_info=ticket_info)
 
 
 def component_token_fetched_func(appid, secret, access_info):
-    ComponentTokenRefreshLogInfo.objects.create(component_appid=appid, component_secret=secret, component_access_info=access_info)
+    if not hasattr(settings, 'DJANGO_WE_COMPONENT_TOKEN_STORE_OR_NOT') or getattr(settings, 'DJANGO_WE_COMPONENT_TOKEN_STORE_OR_NOT'):
+        ComponentTokenRefreshLogInfo.objects.create(component_appid=appid, component_secret=secret, component_access_info=access_info)
 
 
 def component_auth_token_fetched_func(component_appid, component_secret, authorizer_appid, component_authorizer_access_info):
-    ComponentAuthTokenRefreshLogInfo.objects.create(
-        component_appid=component_appid,
-        component_secret=component_secret,
-        authorizer_appid=authorizer_appid,
-        component_authorizer_access_info=component_authorizer_access_info
-    )
+    if not hasattr(settings, 'DJANGO_WE_COMPONENT_AUTH_TOKEN_STORE_OR_NOT') or getattr(settings, 'DJANGO_WE_COMPONENT_AUTH_TOKEN_STORE_OR_NOT'):
+        ComponentAuthTokenRefreshLogInfo.objects.create(
+            component_appid=component_appid,
+            component_secret=component_secret,
+            authorizer_appid=authorizer_appid,
+            component_authorizer_access_info=component_authorizer_access_info
+        )
 
 
 def component_verify_ticket_push_func(component_appid, component_secret, component_verify_ticket):
-    ComponentVerifyTicketLogInfo.objects.create(
-        component_appid=component_appid,
-        component_secret=component_secret,
-        component_verify_ticket=component_verify_ticket
-    )
+    if not hasattr(settings, 'DJANGO_WE_COMPONENT_VERIFY_TICKET_STORE_OR_NOT') or getattr(settings, 'DJANGO_WE_COMPONENT_VERIFY_TICKET_STORE_OR_NOT'):
+        ComponentVerifyTicketLogInfo.objects.create(
+            component_appid=component_appid,
+            component_secret=component_secret,
+            component_verify_ticket=component_verify_ticket
+        )
 
 
 def we_oauth2(request):
