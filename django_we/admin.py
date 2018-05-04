@@ -2,8 +2,8 @@
 
 from django.contrib import admin
 from django_admin import ReadOnlyModelAdmin
-from django_we.models import (ComponentAuthTokenRefreshLogInfo, ComponentTokenRefreshLogInfo, TicketRefreshLogInfo,
-                              TokenRefreshLogInfo)
+from django_we.models import (ComponentAuthTokenRefreshLogInfo, ComponentTokenRefreshLogInfo,
+                              ComponentVerifyTicketLogInfo, TicketRefreshLogInfo, TokenRefreshLogInfo)
 
 
 class TokenRefreshLogInfoAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):
@@ -26,7 +26,13 @@ class ComponentAuthTokenRefreshLogInfoAdmin(ReadOnlyModelAdmin, admin.ModelAdmin
     list_filter = ('component_appid', 'authorizer_appid', 'status')
 
 
+class ComponentVerifyTicketLogInfoAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):
+    list_display = ('component_appid', 'component_secret', 'component_verify_ticket', 'status', 'created_at', 'updated_at')
+    list_filter = ('component_appid', 'status')
+
+
 admin.site.register(TokenRefreshLogInfo, TokenRefreshLogInfoAdmin)
 admin.site.register(TicketRefreshLogInfo, TicketRefreshLogInfoAdmin)
 admin.site.register(ComponentTokenRefreshLogInfo, ComponentTokenRefreshLogInfoAdmin)
 admin.site.register(ComponentAuthTokenRefreshLogInfo, ComponentAuthTokenRefreshLogInfoAdmin)
+admin.site.register(ComponentVerifyTicketLogInfo, ComponentVerifyTicketLogInfoAdmin)

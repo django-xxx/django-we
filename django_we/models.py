@@ -60,3 +60,16 @@ class ComponentAuthTokenRefreshLogInfo(BaseModelMixin):
 
     def __unicode__(self):
         return unicode(self.pk)
+
+
+class ComponentVerifyTicketLogInfo(BaseModelMixin):
+    component_appid = models.CharField(_(u'component_appid'), max_length=32, blank=True, null=True, help_text=u'Component APPID', db_index=True)
+    component_secret = models.CharField(_(u'component_secret'), max_length=32, blank=True, null=True, help_text=u'Component Secret')
+    component_verify_ticket = JSONField(_(u'component_verify_ticket'), blank=True, null=True, help_text=u'Component Verify Ticket')
+
+    class Meta:
+        verbose_name = _(u'componentverifyticketloginfo')
+        verbose_name_plural = _(u'componentverifyticketloginfo')
+
+    def __unicode__(self):
+        return unicode(self.pk)
