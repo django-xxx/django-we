@@ -9,7 +9,7 @@ import jsonfield.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('django_qrcode', '0001_initial'),
+        ('django_we', '0001_initial'),
     ]
 
     operations = [
