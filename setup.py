@@ -3,7 +3,7 @@
 from setuptools import setup
 
 
-version = '1.3.6'
+version = '1.3.7'
 
 
 setup(
