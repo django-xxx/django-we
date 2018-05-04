@@ -306,23 +306,30 @@ def we_component_auth(request):
 
     xml = request.body
 
-    # Set Component Verify Ticket into Redis
-    set_component_verify_ticket(
-        appid=CFG['appID'],
-        secret=CFG['appsecret'],
-        token=CFG['token'],
-        encodingaeskey=CFG['encodingaeskey'],
-        post_data=xml,
-        encrypt=None,
-        msg_signature=msg_signature,
-        timestamp=timestamp,
-        nonce=nonce,
-        storage=redis_storage(request),
-    )
+    # 消息解密
+    decrypted = msg.decrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], post_data=xml, encrypt=None, msg_signature=msg_signature, timestamp=timestamp, nonce=nonce, xmltodict=True)
+
+    # 获取 InfoType
+    InfoType = decrypted.get('InfoType', '')  # unauthorized是取消授权，updateauthorized是更新授权，authorized是授权成功通知，component_verify_ticket
+
+    # 当 InfoType 为 component_verify_ticket 时，进行保存 component_verify_ticket 的操作
+    if InfoType == 'component_verify_ticket':
+        # Set Component Verify Ticket into Redis
+        set_component_verify_ticket(
+            appid=CFG['appID'],
+            secret=CFG['appsecret'],
+            token=CFG['token'],
+            encodingaeskey=CFG['encodingaeskey'],
+            post_data=xml,
+            encrypt=None,
+            msg_signature=msg_signature,
+            timestamp=timestamp,
+            nonce=nonce,
+            storage=redis_storage(request),
+        )
 
     resp_xml = ''
     if hasattr(settings, 'DJANGO_WE_COMPONENT_AUTH_FUNC') and hasattr(settings.DJANGO_WE_COMPONENT_AUTH_FUNC, '__call__'):
-        decrypted = msg.decrypt(CFG['appID'], token=CFG['token'], encodingaeskey=CFG['encodingaeskey'], post_data=xml, encrypt=None, msg_signature=msg_signature, timestamp=timestamp, nonce=nonce, xmltodict=True)
         resp_xml = settings.DJANGO_WE_COMPONENT_AUTH_FUNC(request, xml_to_dict(xml), decrypted or {}) or ''
 
     if resp_xml:
