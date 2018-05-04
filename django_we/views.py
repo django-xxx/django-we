@@ -5,8 +5,8 @@ from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django_logit import logit
-from django_we.models import (ComponentAuthTokenRefreshLogInfo, ComponentTokenRefreshLogInfo, TicketRefreshLogInfo,
-                              TokenRefreshLogInfo)
+from django_we.models import (ComponentAuthTokenRefreshLogInfo, ComponentTokenRefreshLogInfo,
+                              ComponentVerifyTicketLogInfo, TicketRefreshLogInfo, TokenRefreshLogInfo)
 from furl import furl
 from json_response import auto_response
 from pywe_component_authorizer_token import authorizer_access_token, initial_authorizer_access_token
@@ -115,6 +115,14 @@ def component_auth_token_fetched_func(component_appid, component_secret, authori
         component_secret=component_secret,
         authorizer_appid=authorizer_appid,
         component_authorizer_access_info=component_authorizer_access_info
+    )
+
+
+def component_verify_ticket_push_func(component_appid, component_secret, component_verify_ticket):
+    ComponentVerifyTicketLogInfo.objects.create(
+        component_appid=component_appid,
+        component_secret=component_secret,
+        component_verify_ticket=component_verify_ticket
     )
 
 
@@ -327,6 +335,9 @@ def we_component_auth(request):
             nonce=nonce,
             storage=redis_storage(request),
         )
+
+        # Set Component Verify Ticket into MySQL
+        component_verify_ticket_push_func(CFG['appID'], CFG['appsecret'], decrypted)
 
     resp_xml = ''
     if hasattr(settings, 'DJANGO_WE_COMPONENT_AUTH_FUNC') and hasattr(settings.DJANGO_WE_COMPONENT_AUTH_FUNC, '__call__'):
