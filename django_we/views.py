@@ -17,7 +17,7 @@ from pywe_oauth import get_access_info, get_oauth_code_url, get_oauth_redirect_u
 from pywe_qrcode import qrcode_create
 from pywe_sign import check_callback_signature
 from pywe_storage import RedisStorage
-from pywe_token import access_token
+from pywe_token import access_token, refresh_access_token
 from pywe_xml import xml_to_dict
 
 
@@ -259,9 +259,17 @@ def we_jsapi_signature_api(request, state=None):
 
 @auto_response
 def we_access_token(request, state=None):
+    fetch_type = request.GET.get('fetch_type', '')
+
+    if fetch_type == 'refresh':
+        fetch_func = refresh_access_token
+    else:
+        fetch_func = access_token
+
     CFG = final_cfg(request, state=state or 'access_token')
+
     return {
-        'access_token': access_token(
+        'access_token': fetch_func(
             CFG['appID'],
             CFG['appsecret'],
             storage=redis_storage(request),
