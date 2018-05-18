@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.conf import settings
 from django.contrib import admin
 from django_admin import ReadOnlyModelAdmin
 from django_we.models import (ComponentAuthTokenRefreshLogInfo, ComponentTokenRefreshLogInfo,
@@ -31,8 +32,9 @@ class ComponentVerifyTicketLogInfoAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):
     list_filter = ('component_appid', 'status')
 
 
-admin.site.register(TokenRefreshLogInfo, TokenRefreshLogInfoAdmin)
-admin.site.register(TicketRefreshLogInfo, TicketRefreshLogInfoAdmin)
-admin.site.register(ComponentTokenRefreshLogInfo, ComponentTokenRefreshLogInfoAdmin)
-admin.site.register(ComponentAuthTokenRefreshLogInfo, ComponentAuthTokenRefreshLogInfoAdmin)
-admin.site.register(ComponentVerifyTicketLogInfo, ComponentVerifyTicketLogInfoAdmin)
+if not hasattr(settings, 'DJANGO_WE_MODEL_DISPLAY_OR_NOT') or getattr(settings, 'DJANGO_WE_MODEL_DISPLAY_OR_NOT'):
+    admin.site.register(TokenRefreshLogInfo, TokenRefreshLogInfoAdmin)
+    admin.site.register(TicketRefreshLogInfo, TicketRefreshLogInfoAdmin)
+    admin.site.register(ComponentTokenRefreshLogInfo, ComponentTokenRefreshLogInfoAdmin)
+    admin.site.register(ComponentAuthTokenRefreshLogInfo, ComponentAuthTokenRefreshLogInfoAdmin)
+    admin.site.register(ComponentVerifyTicketLogInfo, ComponentVerifyTicketLogInfoAdmin)
