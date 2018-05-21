@@ -396,16 +396,22 @@ def we_component_preauth_callback(request):
 
     CFG = final_cfg(request, state='component_preauth_callback')
 
-    initial_authorizer_access_token(
+    authorizer_access_token, authorizer_appid = initial_authorizer_access_token(
         component_appid=CFG['appID'],
         component_secret=CFG['appsecret'],
         auth_code=auth_code,
         storage=redis_storage(request),
         token_fetched_func=component_token_fetched_func,
-        auth_token_fetched_func=component_auth_token_fetched_func
+        auth_token_fetched_func=component_auth_token_fetched_func,
+        with_authorizer_appid=True
     )
 
-    return HttpResponse()
+    if hasattr(settings, 'DJANGO_WE_COMPONENT_CALLBACK_TEMPLATE'):
+        redirect_tpl = settings.DJANGO_WE_COMPONENT_CALLBACK_TEMPLATE
+        if redirect_tpl:
+            return render(request, redirect_tpl, {'authorizer_appid': authorizer_appid})
+
+    return render(request, 'django_we/errmsg.html', {'title': 'Success', 'errmsg': 'Component Auth Success'})
 
 
 @auto_response
