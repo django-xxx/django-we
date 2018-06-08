@@ -165,10 +165,33 @@ def base_redirect(request):
         return redirect(get_oauth_redirect_url(final_oauth_uri(request, final_state), 'snsapi_base', final_state))
 
     query_params = {}
+
+    # Toset Cookie When ``DJANGO_WE_BASE_REDIRECT_SET_COOKIE = True``
+    if hasattr(settings, 'DJANGO_WE_BASE_REDIRECT_SET_COOKIE') and getattr(settings.DJANGO_WE_BASE_REDIRECT_SET_COOKIE):
+        if hasattr(settings, 'DJANGO_WE_BASE_COOKIE_FUNC') and hasattr(settings.DJANGO_WE_BASE_COOKIE_FUNC, '__call__'):
+            query_params, cookie_key, cookie_value = settings.DJANGO_WE_BASE_COOKIE_FUNC(code, final_state, access_info)
+
+            response = redirect(furl(final_state).remove(access_info.keys()).add(access_info).remove(query_params.keys()).add(query_params).url)
+
+            if hasattr(settings, 'DJANGO_WE_BASE_SET_COOKIE_FUNC') and hasattr(settings.DJANGO_WE_BASE_SET_COOKIE_FUNC, '__call__'):
+                return settings.DJANGO_WE_BASE_SET_COOKIE_FUNC(code, final_state, access_info, query_params, cookie_key, cookie_value)
+
+            max_age = hasattr(settings, 'DJANGO_WE_COOKIE_MAX_AGE') and getattr(settings.DJANGO_WE_COOKIE_MAX_AGE) or 30 * 24 * 60 * 60  # 30d
+            cookie_salt = hasattr(settings, 'DJANGO_WE_COOKIE_SALT') and getattr(settings.DJANGO_WE_COOKIE_SALT) or 'djwe'  # Salt for ``set_signed_cookie``
+
+            response.set_signed_cookie(cookie_key, cookie_value, salt=cookie_salt, **{
+                'max_age': max_age,
+                'httponly': True,
+            })
+
+            return response
+
+        return render(request, 'django_we/errmsg.html', {'title': 'Error', 'errmsg': 'DJANGO_WE_BASE_COOKIE_FUNC Should Exists'})
+
     if hasattr(settings, 'DJANGO_WE_BASE_FUNC') and hasattr(settings.DJANGO_WE_BASE_FUNC, '__call__'):
         query_params = settings.DJANGO_WE_BASE_FUNC(code, final_state, access_info)
 
-    return redirect(furl(final_state).add(access_info).add(query_params).url)
+    return redirect(furl(final_state).remove(access_info.keys()).add(access_info).remove(query_params.keys()).add(query_params).url)
 
 
 @transaction.atomic
@@ -189,6 +212,29 @@ def userinfo_redirect(request):
         return redirect(get_oauth_redirect_url(final_oauth_uri(request, final_state), 'snsapi_userinfo', final_state))
 
     query_params = {}
+
+    # Toset Cookie When ``DJANGO_WE_USERINFO_REDIRECT_SET_COOKIE = True``
+    if hasattr(settings, 'DJANGO_WE_USERINFO_REDIRECT_SET_COOKIE') and getattr(settings.DJANGO_WE_USERINFO_REDIRECT_SET_COOKIE):
+        if hasattr(settings, 'DJANGO_WE_USERINFO_COOKIE_FUNC') and hasattr(settings.DJANGO_WE_USERINFO_COOKIE_FUNC, '__call__'):
+            query_params, cookie_key, cookie_value = settings.DJANGO_WE_USERINFO_COOKIE_FUNC(code, final_state, access_info, userinfo) or {}
+
+            response = redirect(furl(final_state).remove(userinfo.keys()).add(userinfo).remove(query_params.keys()).add(query_params).url)
+
+            if hasattr(settings, 'DJANGO_WE_USERINFO_SET_COOKIE_FUNC') and hasattr(settings.DJANGO_WE_USERINFO_SET_COOKIE_FUNC, '__call__'):
+                return settings.DJANGO_WE_USERINFO_SET_COOKIE_FUNC(code, final_state, access_info, userinfo, query_params, cookie_key, cookie_value)
+
+            max_age = hasattr(settings, 'DJANGO_WE_COOKIE_MAX_AGE') and getattr(settings.DJANGO_WE_COOKIE_MAX_AGE) or 30 * 24 * 60 * 60  # 30d
+            cookie_salt = hasattr(settings, 'DJANGO_WE_COOKIE_SALT') and getattr(settings.DJANGO_WE_COOKIE_SALT) or 'djwe'  # Salt for ``set_signed_cookie``
+
+            response.set_signed_cookie(cookie_key, cookie_value, salt=cookie_salt, **{
+                'max_age': max_age,
+                'httponly': True,
+            })
+
+            return response
+
+        return render(request, 'django_we/errmsg.html', {'title': 'Error', 'errmsg': 'DJANGO_WE_USERINFO_COOKIE_FUNC Should Exists'})
+
     if hasattr(settings, 'DJANGO_WE_USERINFO_FUNC') and hasattr(settings.DJANGO_WE_USERINFO_FUNC, '__call__'):
         query_params = settings.DJANGO_WE_USERINFO_FUNC(code, final_state, access_info, userinfo) or {}
 
