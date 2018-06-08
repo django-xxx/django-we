@@ -167,7 +167,7 @@ def base_redirect(request):
     query_params = {}
 
     # Toset Cookie When ``DJANGO_WE_BASE_REDIRECT_SET_COOKIE = True``
-    if hasattr(settings, 'DJANGO_WE_BASE_REDIRECT_SET_COOKIE') and getattr(settings.DJANGO_WE_BASE_REDIRECT_SET_COOKIE):
+    if hasattr(settings, 'DJANGO_WE_BASE_REDIRECT_SET_COOKIE') and getattr(settings, 'DJANGO_WE_BASE_REDIRECT_SET_COOKIE'):
         if hasattr(settings, 'DJANGO_WE_BASE_COOKIE_FUNC') and hasattr(settings.DJANGO_WE_BASE_COOKIE_FUNC, '__call__'):
             query_params, cookie_key, cookie_value = settings.DJANGO_WE_BASE_COOKIE_FUNC(code, final_state, access_info)
 
@@ -176,8 +176,8 @@ def base_redirect(request):
             if hasattr(settings, 'DJANGO_WE_BASE_SET_COOKIE_FUNC') and hasattr(settings.DJANGO_WE_BASE_SET_COOKIE_FUNC, '__call__'):
                 return settings.DJANGO_WE_BASE_SET_COOKIE_FUNC(code, final_state, access_info, query_params, cookie_key, cookie_value)
 
-            max_age = hasattr(settings, 'DJANGO_WE_COOKIE_MAX_AGE') and getattr(settings.DJANGO_WE_COOKIE_MAX_AGE) or 30 * 24 * 60 * 60  # 30d
-            cookie_salt = hasattr(settings, 'DJANGO_WE_COOKIE_SALT') and getattr(settings.DJANGO_WE_COOKIE_SALT) or 'djwe'  # Salt for ``set_signed_cookie``
+            max_age = hasattr(settings, 'DJANGO_WE_COOKIE_MAX_AGE') and getattr(settings, 'DJANGO_WE_COOKIE_MAX_AGE') or 30 * 24 * 60 * 60  # 30d
+            cookie_salt = hasattr(settings, 'DJANGO_WE_COOKIE_SALT') and getattr(settings, 'DJANGO_WE_COOKIE_SALT') or 'djwe'  # Salt for ``set_signed_cookie``
 
             response.set_signed_cookie(cookie_key, cookie_value, salt=cookie_salt, **{
                 'max_age': max_age,
@@ -214,7 +214,7 @@ def userinfo_redirect(request):
     query_params = {}
 
     # Toset Cookie When ``DJANGO_WE_USERINFO_REDIRECT_SET_COOKIE = True``
-    if hasattr(settings, 'DJANGO_WE_USERINFO_REDIRECT_SET_COOKIE') and getattr(settings.DJANGO_WE_USERINFO_REDIRECT_SET_COOKIE):
+    if hasattr(settings, 'DJANGO_WE_USERINFO_REDIRECT_SET_COOKIE') and getattr(settings, 'DJANGO_WE_USERINFO_REDIRECT_SET_COOKIE'):
         if hasattr(settings, 'DJANGO_WE_USERINFO_COOKIE_FUNC') and hasattr(settings.DJANGO_WE_USERINFO_COOKIE_FUNC, '__call__'):
             query_params, cookie_key, cookie_value = settings.DJANGO_WE_USERINFO_COOKIE_FUNC(code, final_state, access_info, userinfo) or {}
 
@@ -223,8 +223,8 @@ def userinfo_redirect(request):
             if hasattr(settings, 'DJANGO_WE_USERINFO_SET_COOKIE_FUNC') and hasattr(settings.DJANGO_WE_USERINFO_SET_COOKIE_FUNC, '__call__'):
                 return settings.DJANGO_WE_USERINFO_SET_COOKIE_FUNC(code, final_state, access_info, userinfo, query_params, cookie_key, cookie_value)
 
-            max_age = hasattr(settings, 'DJANGO_WE_COOKIE_MAX_AGE') and getattr(settings.DJANGO_WE_COOKIE_MAX_AGE) or 30 * 24 * 60 * 60  # 30d
-            cookie_salt = hasattr(settings, 'DJANGO_WE_COOKIE_SALT') and getattr(settings.DJANGO_WE_COOKIE_SALT) or 'djwe'  # Salt for ``set_signed_cookie``
+            max_age = hasattr(settings, 'DJANGO_WE_COOKIE_MAX_AGE') and getattr(settings, 'DJANGO_WE_COOKIE_MAX_AGE') or 30 * 24 * 60 * 60  # 30d
+            cookie_salt = hasattr(settings, 'DJANGO_WE_COOKIE_SALT') and getattr(settings, 'DJANGO_WE_COOKIE_SALT') or 'djwe'  # Salt for ``set_signed_cookie``
 
             response.set_signed_cookie(cookie_key, cookie_value, salt=cookie_salt, **{
                 'max_age': max_age,
