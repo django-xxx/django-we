@@ -132,7 +132,7 @@ def component_verify_ticket_push_func(component_appid, component_secret, compone
 
 
 def we_oauth2(request):
-    scope = request.GET.get('scope', 'snsapi_userinfo') or request.GET.get('s', '')
+    scope = request.GET.get('scope', '') or request.GET.get('s', 'snsapi_userinfo')
     redirect_url = request.GET.get('redirect_url', '') or request.GET.get('r', '')
     default_url = request.GET.get('default_url', '') or request.GET.get('d', '')
     direct_redirect = bool(request.GET.get('direct_redirect', '') or request.GET.get('dr', ''))
