@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django_models_ext import BaseModelMixin
+from django_models_ext import BaseModelMixin, SexModelMixin
 from jsonfield import JSONField
 
 
@@ -70,6 +70,41 @@ class ComponentVerifyTicketLogInfo(BaseModelMixin):
     class Meta:
         verbose_name = _(u'componentverifyticketloginfo')
         verbose_name_plural = _(u'componentverifyticketloginfo')
+
+    def __unicode__(self):
+        return unicode(self.pk)
+
+
+class SubscribeUserInfo(BaseModelMixin):
+    # Refer：https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140839
+    unionid = models.CharField(_(u'unionid'), max_length=32, blank=True, null=True, help_text=u'UnionID', db_index=True)
+    openid = models.CharField(_(u'openid'), max_length=32, blank=True, null=True, help_text=u'OpenID', db_index=True)
+
+    nickname = models.CharField(_(u'nickname'), max_length=32, blank=True, null=True, help_text=u'昵称')
+    sex = models.IntegerField(_(u'sex'), choices=SexModelMixin.SEX_TUPLE, default=SexModelMixin.UNKNOWN, help_text=u'性别', db_index=True)
+    headimgurl = models.URLField(_(u'headimgurl'), blank=True, null=True, help_text=u'头像')
+
+    country = models.CharField(_(u'country'), max_length=16, blank=True, null=True, help_text=u'国家')
+    province = models.CharField(_(u'province'), max_length=16, blank=True, null=True, help_text=u'省份')
+    city = models.CharField(_(u'city'), max_length=16, blank=True, null=True, help_text=u'城市')
+
+    subscribe = models.IntegerField(_(u'subscribe'), default=1, help_text=u'是否关注', db_index=True)
+    subscribe_time = models.IntegerField(_(u'subscribe_time'), default=0, help_text=u'关注时间')
+    subscribe_scene = models.CharField(_(u'subscribe_scene'), max_length=32, blank=True, null=True, help_text=u'关注渠道来源')
+
+    groupid = models.IntegerField(_(u'groupid'), default=0, help_text=u'分组ID')
+    tagid_list = JSONField(_(u'tagid_list'), blank=True, null=True, help_text=u'标签ID列表')
+
+    qr_scene = models.IntegerField(_(u'qr_scene'), default=0, help_text=u'二维码扫码场景')
+    qr_scene_str = models.CharField(_(u'qr_scene_str'), max_length=64, blank=True, null=True, help_text=u'二维码扫码场景描述）')
+
+    language = models.CharField(_(u'language'), max_length=8, default='zh_CN', help_text=u'语言')
+
+    remark = models.CharField(_(u'remark'), max_length=16, blank=True, null=True, help_text=u'备注')
+
+    class Meta:
+        verbose_name = _(u'subscribeuserinfo')
+        verbose_name_plural = _(u'subscribeuserinfo')
 
     def __unicode__(self):
         return unicode(self.pk)

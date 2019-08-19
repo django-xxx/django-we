@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib import admin
 from django_admin import ReadOnlyModelAdmin
 from django_we.models import (ComponentAuthTokenRefreshLogInfo, ComponentTokenRefreshLogInfo,
-                              ComponentVerifyTicketLogInfo, TicketRefreshLogInfo, TokenRefreshLogInfo)
+                              ComponentVerifyTicketLogInfo, SubscribeUserInfo, TicketRefreshLogInfo, TokenRefreshLogInfo)
 
 
 class TokenRefreshLogInfoAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):
@@ -32,9 +32,16 @@ class ComponentVerifyTicketLogInfoAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):
     list_filter = ('component_appid', 'status')
 
 
+class SubscribeUserInfoAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):
+    list_display = ('unionid', 'openid', 'nickname', 'sex', 'country', 'province', 'city', 'subscribe', 'subscribe_time', 'subscribe_scene', 'groupid', 'tagid_list', 'qr_scene', 'qr_scene_str', 'language', 'remark', 'status', 'created_at', 'updated_at')
+    list_filter = ('sex', 'subscribe', 'subscribe_scene', 'language', 'status')
+    search_fields = ('unionid', 'openid', 'nickname')
+
+
 if not hasattr(settings, 'DJANGO_WE_MODEL_DISPLAY_OR_NOT') or getattr(settings, 'DJANGO_WE_MODEL_DISPLAY_OR_NOT'):
     admin.site.register(TokenRefreshLogInfo, TokenRefreshLogInfoAdmin)
     admin.site.register(TicketRefreshLogInfo, TicketRefreshLogInfoAdmin)
     admin.site.register(ComponentTokenRefreshLogInfo, ComponentTokenRefreshLogInfoAdmin)
     admin.site.register(ComponentAuthTokenRefreshLogInfo, ComponentAuthTokenRefreshLogInfoAdmin)
     admin.site.register(ComponentVerifyTicketLogInfo, ComponentVerifyTicketLogInfoAdmin)
+    admin.site.register(SubscribeUserInfo, SubscribeUserInfoAdmin)
