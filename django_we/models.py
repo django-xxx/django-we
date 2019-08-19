@@ -96,7 +96,7 @@ class SubscribeUserInfo(BaseModelMixin):
     tagid_list = JSONField(_(u'tagid_list'), blank=True, null=True, help_text=u'标签ID列表')
 
     qr_scene = models.IntegerField(_(u'qr_scene'), default=0, help_text=u'二维码扫码场景')
-    qr_scene_str = models.CharField(_(u'qr_scene_str'), max_length=64, blank=True, null=True, help_text=u'二维码扫码场景描述）')
+    qr_scene_str = models.CharField(_(u'qr_scene_str'), max_length=64, blank=True, null=True, help_text=u'二维码扫码场景描述')
 
     language = models.CharField(_(u'language'), max_length=8, default='zh_CN', help_text=u'语言')
 

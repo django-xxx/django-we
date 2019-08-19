@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ('groupid', models.IntegerField(default=0, help_text='\u5206\u7ec4ID', verbose_name='groupid')),
                 ('tagid_list', jsonfield.fields.JSONField(blank=True, help_text='\u6807\u7b7eID\u5217\u8868', null=True, verbose_name='tagid_list')),
                 ('qr_scene', models.IntegerField(default=0, help_text='\u4e8c\u7ef4\u7801\u626b\u7801\u573a\u666f', verbose_name='qr_scene')),
-                ('qr_scene_str', models.CharField(blank=True, help_text='\u4e8c\u7ef4\u7801\u626b\u7801\u573a\u666f\u63cf\u8ff0\uff09', max_length=64, null=True, verbose_name='qr_scene_str')),
+                ('qr_scene_str', models.CharField(blank=True, help_text='\u4e8c\u7ef4\u7801\u626b\u7801\u573a\u666f\u63cf\u8ff0', max_length=64, null=True, verbose_name='qr_scene_str')),
                 ('language', models.CharField(default='zh_CN', help_text='\u8bed\u8a00', max_length=8, verbose_name='language')),
                 ('remark', models.CharField(blank=True, help_text='\u5907\u6ce8', max_length=16, null=True, verbose_name='remark')),
             ],
