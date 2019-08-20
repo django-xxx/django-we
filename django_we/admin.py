@@ -33,8 +33,8 @@ class ComponentVerifyTicketLogInfoAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):
 
 
 class SubscribeUserInfoAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):
-    list_display = ('unionid', 'openid', 'nickname', 'sex', 'country', 'province', 'city', 'subscribe', 'subscribe_time', 'subscribe_scene', 'groupid', 'tagid_list', 'qr_scene', 'qr_scene_str', 'language', 'remark', 'status', 'created_at', 'updated_at')
-    list_filter = ('sex', 'subscribe', 'subscribe_scene', 'language', 'status')
+    list_display = ('extraid', 'unionid', 'openid', 'nickname', 'sex', 'country', 'province', 'city', 'subscribe', 'subscribe_time', 'subscribe_scene', 'groupid', 'tagid_list', 'qr_scene', 'qr_scene_str', 'language', 'remark', 'status', 'created_at', 'updated_at')
+    list_filter = ('extraid', 'sex', 'subscribe', 'subscribe_scene', 'language', 'status')
     search_fields = ('unionid', 'openid', 'nickname')
 
 

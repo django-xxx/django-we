@@ -76,6 +76,8 @@ class ComponentVerifyTicketLogInfo(BaseModelMixin):
 
 
 class SubscribeUserInfo(BaseModelMixin):
+    extraid = models.CharField(_(u'extraid'), max_length=32, blank=True, null=True, help_text=u'ExtraID', db_index=True)
+
     # Refer：https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140839
     unionid = models.CharField(_(u'unionid'), max_length=32, blank=True, null=True, help_text=u'UnionID', db_index=True)
     openid = models.CharField(_(u'openid'), max_length=32, blank=True, null=True, help_text=u'OpenID', db_index=True)
@@ -105,6 +107,10 @@ class SubscribeUserInfo(BaseModelMixin):
     class Meta:
         verbose_name = _(u'subscribeuserinfo')
         verbose_name_plural = _(u'subscribeuserinfo')
+
+        unique_together = (
+            ('extraid', 'unionid', 'openid'),
+        )
 
     def __unicode__(self):
         return unicode(self.pk)
