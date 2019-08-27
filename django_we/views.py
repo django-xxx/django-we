@@ -189,7 +189,7 @@ def base_redirect(request):
         return render(request, 'django_we/errmsg.html', {'title': 'Error', 'errmsg': 'DJANGO_WE_BASE_COOKIE_FUNC Should Exists'})
 
     if hasattr(settings, 'DJANGO_WE_BASE_FUNC') and hasattr(settings.DJANGO_WE_BASE_FUNC, '__call__'):
-        query_params = settings.DJANGO_WE_BASE_FUNC(code, final_state, access_info)
+        query_params = settings.DJANGO_WE_BASE_FUNC(code, final_state, access_info) or {}
 
     return redirect(furl(final_state).remove(access_info.keys()).add(access_info).remove(query_params.keys()).add(query_params).url)
 
