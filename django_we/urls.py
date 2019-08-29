@@ -4,6 +4,9 @@ from django.conf.urls import url
 from django_we import views as we_views
 
 
+app_name = 'django_we'
+
+
 # WeChat OAuth2
 urlpatterns = [
     url(r'^o$', we_views.we_oauth2, name='shorten_o'),

@@ -18,7 +18,7 @@ Urls.py
 ::
 
     urlpatterns = [
-        url(r'^we/', include('django_we.urls', namespace='wechat')),
+        url(r'^we/', include('django_we.urls', namespace='django_we')),
     ]
 
 
