@@ -292,6 +292,8 @@ def we_share(request):
 
 @auto_response
 def we_jsapi_signature_api(request, state=None):
+    if hasattr(settings, 'DJANGO_WE_ENABLED_OR_NOT') and not getattr(settings, 'DJANGO_WE_ENABLED_OR_NOT'):
+        return {}
     CFG = final_cfg(request, state=state or 'jsapi_signature')
     return jsapi_signature_params(
         CFG['appID'],
