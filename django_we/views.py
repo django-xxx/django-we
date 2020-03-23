@@ -317,6 +317,7 @@ def we_access_token(request, state=None):
     CFG = final_cfg(request, state=state or 'access_token')
 
     return {
+        'appid': CFG['appID'],
         'access_token': fetch_func(
             CFG['appID'],
             CFG['appsecret'],
