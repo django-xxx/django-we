@@ -18,7 +18,7 @@ class TokenRefreshLogInfo(BaseModelMixin):
         verbose_name_plural = _(u'tokenrefreshloginfo')
 
     def __unicode__(self):
-        return unicode(self.pk)
+        return self.pk
 
 
 class TicketRefreshLogInfo(BaseModelMixin):
@@ -32,7 +32,7 @@ class TicketRefreshLogInfo(BaseModelMixin):
         verbose_name_plural = _(u'ticketrefreshloginfo')
 
     def __unicode__(self):
-        return unicode(self.pk)
+        return self.pk
 
 
 class ComponentTokenRefreshLogInfo(BaseModelMixin):
@@ -45,7 +45,7 @@ class ComponentTokenRefreshLogInfo(BaseModelMixin):
         verbose_name_plural = _(u'componenttokenrefreshloginfo')
 
     def __unicode__(self):
-        return unicode(self.pk)
+        return self.pk
 
 
 class ComponentAuthTokenRefreshLogInfo(BaseModelMixin):
@@ -59,7 +59,7 @@ class ComponentAuthTokenRefreshLogInfo(BaseModelMixin):
         verbose_name_plural = _(u'componentauthtokenrefreshloginfo')
 
     def __unicode__(self):
-        return unicode(self.pk)
+        return self.pk
 
 
 class ComponentVerifyTicketLogInfo(BaseModelMixin):
@@ -72,7 +72,7 @@ class ComponentVerifyTicketLogInfo(BaseModelMixin):
         verbose_name_plural = _(u'componentverifyticketloginfo')
 
     def __unicode__(self):
-        return unicode(self.pk)
+        return self.pk
 
 
 class SubscribeUserInfo(BaseModelMixin):
@@ -113,4 +113,4 @@ class SubscribeUserInfo(BaseModelMixin):
         )
 
     def __unicode__(self):
-        return unicode(self.pk)
+        return self.pk
