@@ -3,8 +3,10 @@
 from django.conf import settings
 from django.contrib import admin
 from django_admin import ReadOnlyModelAdmin
+
 from django_we.models import (ComponentAuthTokenRefreshLogInfo, ComponentTokenRefreshLogInfo,
-                              ComponentVerifyTicketLogInfo, SubscribeUserInfo, TicketRefreshLogInfo, TokenRefreshLogInfo)
+                              ComponentVerifyTicketLogInfo, SubscribeUserInfo, TicketRefreshLogInfo,
+                              TokenRefreshLogInfo)
 
 
 class TokenRefreshLogInfoAdmin(ReadOnlyModelAdmin, admin.ModelAdmin):

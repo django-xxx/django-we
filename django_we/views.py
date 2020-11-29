@@ -5,8 +5,6 @@ from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django_logit import logit
-from django_we.models import (ComponentAuthTokenRefreshLogInfo, ComponentTokenRefreshLogInfo,
-                              ComponentVerifyTicketLogInfo, TicketRefreshLogInfo, TokenRefreshLogInfo)
 from furl import furl
 from json_response import auto_response
 from pywe_component_authorizer_token import authorizer_access_token, initial_authorizer_access_token
@@ -19,6 +17,9 @@ from pywe_sign import check_callback_signature
 from pywe_storage import RedisStorage
 from pywe_token import access_token, refresh_access_token
 from pywe_xml import xml_to_dict
+
+from django_we.models import (ComponentAuthTokenRefreshLogInfo, ComponentTokenRefreshLogInfo,
+                              ComponentVerifyTicketLogInfo, TicketRefreshLogInfo, TokenRefreshLogInfo)
 
 
 JSAPI = settings.WECHAT.get(getattr(settings, 'DJANGO_WE_OAUTH_CFG') if hasattr(settings, 'DJANGO_WE_OAUTH_CFG') else 'JSAPI', {})
