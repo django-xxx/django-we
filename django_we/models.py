@@ -3,8 +3,8 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 from django_models_ext import BaseModelMixin, SexModelMixin
+from django_six import gettext_lazy as _
 from jsonfield import JSONField
 
 

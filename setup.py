@@ -11,7 +11,8 @@ setup(
     version=version,
     keywords='django-we',
     description='Django WeChat OAuth2/Share/Token API',
-    long_description=open('README.rst').read(),
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
 
     url='https://github.com/django-xxx/django-we',
 
@@ -20,7 +21,7 @@ setup(
 
     packages=['django_we'],
     py_modules=[],
-    install_requires=['django-admin>=1.2.4', 'django-detect', 'django-json-response', 'django-logit', 'django-models-ext>=1.1.10', 'furl', 'jsonfield', 'pywe-component-authorizer-token>=1.1.1', 'pywe-component-ticket', 'pywe-decrypt>=1.1.3', 'pywe-jssdk>=1.1.0', 'pywe-oauth>=1.0.5', 'pywe-qrcode', 'pywe-sign>=1.0.7', 'pywe-storage', 'pywe-token>=1.2.1', 'pywe-xml'],
+    install_requires=['django-admin>=1.2.4', 'django-detect', 'django-json-response', 'django-logit', 'django-models-ext>=1.1.10', 'django-six', 'furl', 'jsonfield', 'pywe-component-authorizer-token>=1.1.1', 'pywe-component-ticket', 'pywe-decrypt>=1.1.3', 'pywe-jssdk>=1.1.0', 'pywe-oauth>=1.0.5', 'pywe-qrcode', 'pywe-sign>=1.0.7', 'pywe-storage', 'pywe-token>=1.2.1', 'pywe-xml'],
     include_package_data=True,
 
     classifiers=[
