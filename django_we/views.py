@@ -136,7 +136,10 @@ def we_oauth2(request):
     scope = request.GET.get('scope', '') or request.GET.get('s', 'snsapi_userinfo')
     redirect_url = request.GET.get('redirect_url', '') or request.GET.get('r', '/')
     default_url = request.GET.get('default_url', '') or request.GET.get('d', '')
-    direct_redirect = bool(request.GET.get('direct_redirect', '') or request.GET.get('dr', ''))
+    direct_redirect = request.GET.get('direct_redirect', '') or request.GET.get('dr', 'false')
+    direct_redirect = True if direct_redirect == 'true' else False
+    force_popup = request.GET.get('force_popup', '') or request.GET.get('fp', 'false')
+    force_popup = True if force_popup == 'true' else False
 
     if not (redirect_url or default_url):
         return render(request, 'django_we/errmsg.html', {'title': 'Error', 'errmsg': 'Redirect or Default URL Should Exists'})
@@ -147,7 +150,7 @@ def we_oauth2(request):
             redirect_uri = final_direct_userinfo_redirect_uri(request) if scope == 'snsapi_userinfo' else final_direct_base_redirect_uri(request)
         else:
             redirect_uri = final_userinfo_redirect_uri(request) if scope == 'snsapi_userinfo' else final_base_redirect_uri(request)
-        return redirect(get_oauth_code_url(CFG['appID'], redirect_uri, scope, quote_state(request, redirect_url)))
+        return redirect(get_oauth_code_url(CFG['appID'], redirect_uri, scope, quote_state(request, redirect_url), forcePopup=force_popup))
 
     return redirect(default_url or redirect_url)
 
